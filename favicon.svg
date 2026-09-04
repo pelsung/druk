@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Druk.help">
+  <title>Druk.help</title>
+  <defs>
+    <clipPath id="round"><rect width="512" height="512" rx="112" ry="112"/></clipPath>
+  </defs>
+  <g clip-path="url(#round)">
+    <rect x="0"     width="102.4" height="512" fill="#F3ECDD"/>
+    <rect x="102.4" width="102.4" height="512" fill="#D9A62E"/>
+    <rect x="204.8" width="102.4" height="512" fill="#8E2B1F"/>
+    <rect x="307.2" width="102.4" height="512" fill="#4E7A46"/>
+    <rect x="409.6" width="102.4" height="512" fill="#3F6E9D"/>
+  </g>
+  <rect x="9" y="9" width="494" height="494" rx="103" ry="103" fill="none" stroke="#231A12" stroke-opacity="0.28" stroke-width="18"/>
+</svg>
