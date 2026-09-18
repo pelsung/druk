@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400" role="img" aria-label="Seven connected grids radiating from a central healthcare node">
+  <rect width="600" height="400" fill="#EFE7D8"/>
+
+  <!-- faint dot grid -->
+  <g fill="#D8CCB6">
+    <g id="grid-row">
+      <circle cx="40" cy="40" r="2"/><circle cx="80" cy="40" r="2"/><circle cx="120" cy="40" r="2"/>
+      <circle cx="160" cy="40" r="2"/><circle cx="200" cy="40" r="2"/><circle cx="240" cy="40" r="2"/>
+      <circle cx="280" cy="40" r="2"/><circle cx="320" cy="40" r="2"/><circle cx="360" cy="40" r="2"/>
+      <circle cx="400" cy="40" r="2"/><circle cx="440" cy="40" r="2"/><circle cx="480" cy="40" r="2"/>
+      <circle cx="520" cy="40" r="2"/><circle cx="560" cy="40" r="2"/>
+    </g>
+    <use href="#grid-row" y="40"/><use href="#grid-row" y="80"/><use href="#grid-row" y="120"/>
+    <use href="#grid-row" y="160"/><use href="#grid-row" y="200"/><use href="#grid-row" y="240"/>
+    <use href="#grid-row" y="280"/><use href="#grid-row" y="320"/>
+  </g>
+
+  <!-- links out from the centre -->
+  <g stroke="#A2957F" stroke-width="1.5" fill="none">
+    <path d="M300 200 L440 200"/>
+    <path d="M300 200 L370 109"/>
+    <path d="M300 200 L230 109"/>
+    <path d="M300 200 L160 200"/>
+    <path d="M300 200 L230 291"/>
+    <path d="M300 200 L370 291"/>
+  </g>
+
+  <!-- ring between neighbours -->
+  <g stroke="#C8BCA6" stroke-width="1.5" fill="none" stroke-dasharray="5 7">
+    <path d="M440 200 L370 109 L230 109 L160 200 L230 291 L370 291 Z"/>
+  </g>
+
+  <!-- the six surrounding grids -->
+  <g>
+    <rect x="412" y="172" width="56" height="56" rx="10" fill="#D9A62E"/>
+    <rect x="342" y="81" width="56" height="56" rx="10" fill="#4E7A46"/>
+    <rect x="202" y="81" width="56" height="56" rx="10" fill="#3F6E9D"/>
+    <rect x="132" y="172" width="56" height="56" rx="10" fill="#F3ECDD" stroke="#DCD2C0"/>
+    <rect x="202" y="263" width="56" height="56" rx="10" fill="#22170F"/>
+    <rect x="342" y="263" width="56" height="56" rx="10" fill="#C8BCA6"/>
+  </g>
+
+  <!-- healthcare at the centre, where it starts -->
+  <rect x="256" y="156" width="88" height="88" rx="14" fill="#8E2B1F"/>
+  <g fill="#F6F0E4">
+    <rect x="292" y="174" width="16" height="52" rx="4"/>
+    <rect x="274" y="192" width="52" height="16" rx="4"/>
+  </g>
+
+  <rect x="0.5" y="0.5" width="599" height="399" fill="none" stroke="#DCD2C0"/>
+</svg>

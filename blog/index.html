@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Blog — Druk.help</title>
+<meta name="description" content="Notes from Druk.help on adopting, deploying and building Digital Public Goods in Bhutan — what we are working on, what we have learned, and what we are contributing back.">
+<link rel="canonical" href="https://druk.help/blog/">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="author" content="Druk.help">
+<meta name="theme-color" content="#F6F0E4">
+<meta name="color-scheme" content="light">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Druk.help">
+<meta property="og:title" content="Blog — Druk.help">
+<meta property="og:description" content="Notes from Druk.help on adopting, deploying and building Digital Public Goods in Bhutan.">
+<meta property="og:url" content="https://druk.help/blog/">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://druk.help/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Druk.help — Digital Public Infrastructure, built for people.">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Blog — Druk.help">
+<meta name="twitter:description" content="Notes from Druk.help on adopting, deploying and building Digital Public Goods in Bhutan.">
+<meta name="twitter:image" content="https://druk.help/og-image.png">
+
+<!-- Icons and manifest -->
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Albert+Sans:wght@400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="blog.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "@id": "https://druk.help/blog/#blog",
+  "url": "https://druk.help/blog/",
+  "name": "Druk.help Blog",
+  "description": "Notes from Druk.help on adopting, deploying and building Digital Public Goods in Bhutan.",
+  "inLanguage": "en",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Druk.help",
+    "url": "https://druk.help/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://druk.help/icon-512.png",
+      "width": 512,
+      "height": 512
+    }
+  }
+}
+</script>
+</head>
+<body>
+
+<a class="dh-skip" href="#main">Skip to content</a>
+
+<header class="dh-header">
+  <div class="dh-bar">
+    <a href="../index.html" class="dh-brand">
+      <span aria-hidden="true" class="dh-flagmark"></span>
+      <span class="dh-wordmark">Druk<span>.</span>help</span>
+    </a>
+    <nav class="dh-nav" aria-label="Primary">
+      <a href="../index.html#work" class="dh-nav-hide">What we do</a>
+      <a href="../index.html#care" class="dh-nav-hide">CARE</a>
+      <a href="../index.html#how" class="dh-nav-hide">How we work</a>
+      <a href="index.html" aria-current="page">Blog</a>
+      <a href="../index.html#contact" class="dh-cta">Partner with us</a>
+    </nav>
+      <button type="button" class="dh-burger" aria-expanded="false" aria-controls="blog-mobile-nav" aria-label="Open menu">
+        <span class="dh-bars" aria-hidden="true"><i></i><i></i></span>
+      </button>
+  </div>
+    <div id="blog-mobile-nav" class="dh-panel" data-open="false" aria-hidden="true">
+      <nav class="dh-panel-inner" aria-label="Primary">
+        <a href="../index.html#work">What we do<span class="dh-panel-idx" aria-hidden="true">02</span></a>
+        <a href="../index.html#care">CARE<span class="dh-panel-idx" aria-hidden="true">03</span></a>
+        <a href="../index.html#how">How we work<span class="dh-panel-idx" aria-hidden="true">05</span></a>
+        <a href="index.html" aria-current="page">Blog<span class="dh-panel-idx" aria-hidden="true">09</span></a>
+        <a href="../index.html#contact" class="dh-panel-cta">Partner with us</a>
+      </nav>
+    </div>
+</header>
+
+<main id="main">
+  <div class="dh-wrap blog-hero">
+    <p class="dh-eyebrow">Writing</p>
+    <h1>Notes from the <em>field.</em></h1>
+    <p class="lede">What we are building, what we are deploying, and what we are learning along the way — written for the people doing the same work elsewhere.</p>
+  </div>
+
+  <div class="dh-wrap">
+    <div class="blog-controls">
+      <label class="dh-skip" for="blog-search">Search posts</label>
+      <input id="blog-search" class="blog-search" type="search" placeholder="Search posts…" autocomplete="off">
+      <div id="blog-tags" class="blog-tags" role="group" aria-label="Filter by topic"></div>
+    </div>
+
+    <ul id="blog-list" class="blog-list"></ul>
+
+    <p id="blog-empty" class="blog-empty" hidden>No posts match that search yet. Try a different word, or clear the filter.</p>
+    <p id="blog-count" class="blog-count"></p>
+  </div>
+
+  <section class="blog-cta">
+    <div class="dh-wrap">
+      <p class="dh-eyebrow">Build with us</p>
+      <h2>Working on something similar?</h2>
+      <p>If you are adopting a Digital Public Good, running an open-source deployment in the public sector, or thinking about doing either — we would like to hear about it.</p>
+      <div class="btn-row">
+        <a href="../index.html#contact" class="btn-solid">Partner with us</a>
+        <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer" class="btn-ghost">Pelsung on GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="dh-footer">
+  <div class="inner">
+    <div class="brand">
+      <span aria-hidden="true" class="dh-flagmark"></span>
+      <span>Druk.help</span>
+    </div>
+    <p>Open technology. Public infrastructure. Bhutan to the world.</p>
+    <p>A program by <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer">Pelsung</a></p>
+    <p class="legal">&copy; 2026 Druk.help &middot; <!--email_off-->hello@druk.help<!--/email_off--></p>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+</footer>
+
+<script src="posts.js"></script>
+<script src="blog.js"></script>
+</body>
+</html>

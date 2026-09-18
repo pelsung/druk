@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!--
+  ===========================================================================
+  Druk.help — post template
+
+  To write a post by hand:
+    1. Copy this file to  blog/your-post-slug.html
+    2. Replace every {{PLACEHOLDER}} below (they are all in the <head> and the
+       post header — the rest of the page needs no edits).
+    3. Write the article inside <div class="post-body"> … </div>.
+    4. Add the post to blog/posts.js so it shows up on the index.
+    5. Run: node blog/sync.mjs  (updates sitemap.xml + the landing page cards)
+
+  Or skip all of that:  node blog/new-post.mjs "Your post title"
+  ===========================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{{TITLE}} — Druk.help</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="https://druk.help/blog/{{SLUG}}.html">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="author" content="{{AUTHOR}}">
+<meta name="theme-color" content="#F6F0E4">
+<meta name="color-scheme" content="light">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Druk.help">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:url" content="https://druk.help/blog/{{SLUG}}.html">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://druk.help/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="article:published_time" content="{{DATE_ISO}}">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{TITLE}}">
+<meta name="twitter:description" content="{{DESCRIPTION}}">
+<meta name="twitter:image" content="https://druk.help/og-image.png">
+
+<!-- Icons and manifest -->
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Albert+Sans:wght@400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="blog.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{TITLE}}",
+  "description": "{{DESCRIPTION}}",
+  "datePublished": "{{DATE_ISO}}",
+  "dateModified": "{{DATE_ISO}}",
+  "inLanguage": "en",
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://druk.help/blog/{{SLUG}}.html" },
+  "image": "https://druk.help/og-image.png",
+  "author": { "@type": "Organization", "name": "{{AUTHOR}}", "url": "https://druk.help/" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Druk.help",
+    "url": "https://druk.help/",
+    "logo": { "@type": "ImageObject", "url": "https://druk.help/icon-512.png", "width": 512, "height": 512 }
+  },
+  "isPartOf": { "@id": "https://druk.help/blog/#blog" }
+}
+</script>
+</head>
+<body>
+
+<a class="dh-skip" href="#main">Skip to content</a>
+
+<header class="dh-header">
+  <div class="dh-bar">
+    <a href="../index.html" class="dh-brand">
+      <span aria-hidden="true" class="dh-flagmark"></span>
+      <span class="dh-wordmark">Druk<span>.</span>help</span>
+    </a>
+    <nav class="dh-nav" aria-label="Primary">
+      <a href="../index.html#work" class="dh-nav-hide">What we do</a>
+      <a href="../index.html#care" class="dh-nav-hide">CARE</a>
+      <a href="../index.html#how" class="dh-nav-hide">How we work</a>
+      <a href="index.html" aria-current="page">Blog</a>
+      <a href="../index.html#contact" class="dh-cta">Partner with us</a>
+    </nav>
+      <button type="button" class="dh-burger" aria-expanded="false" aria-controls="blog-mobile-nav" aria-label="Open menu">
+        <span class="dh-bars" aria-hidden="true"><i></i><i></i></span>
+      </button>
+  </div>
+    <div id="blog-mobile-nav" class="dh-panel" data-open="false" aria-hidden="true">
+      <nav class="dh-panel-inner" aria-label="Primary">
+        <a href="../index.html#work">What we do<span class="dh-panel-idx" aria-hidden="true">02</span></a>
+        <a href="../index.html#care">CARE<span class="dh-panel-idx" aria-hidden="true">03</span></a>
+        <a href="../index.html#how">How we work<span class="dh-panel-idx" aria-hidden="true">05</span></a>
+        <a href="index.html" aria-current="page">Blog<span class="dh-panel-idx" aria-hidden="true">09</span></a>
+        <a href="../index.html#contact" class="dh-panel-cta">Partner with us</a>
+      </nav>
+    </div>
+</header>
+
+<main id="main">
+  <article class="dh-wrap post-head">
+    <p class="dh-eyebrow"><a href="index.html" style="color: inherit">All writing</a></p>
+    <h1>{{TITLE}}</h1>
+    <p class="standfirst">{{DESCRIPTION}}</p>
+    <div class="post-byline dh-meta">
+      <time datetime="{{DATE_ISO}}">{{DATE_HUMAN}}</time>
+      <span class="sep" aria-hidden="true">/</span>
+      <span>{{AUTHOR}}</span>
+      <span class="sep" aria-hidden="true">/</span>
+      <span data-reading-time></span>
+    </div>
+
+    <!-- ===================== WRITE THE POST BELOW ===================== -->
+    <div class="post-body">
+
+      <p>Opening paragraph. Say the thing you actually want the reader to take away — the rest of the post earns it.</p>
+
+      <h2>A section heading</h2>
+
+      <p>Body text. Links look like <a href="https://druk.help/">this</a>. Use <strong>bold</strong> for the words that carry the point.</p>
+
+      <ul>
+        <li>A list item.</li>
+        <li>Another one.</li>
+      </ul>
+
+      <blockquote>
+        <p>A pull quote, for the sentence worth slowing down on.</p>
+      </blockquote>
+
+      <div class="post-callout">
+        <p class="dh-eyebrow">Note</p>
+        <p>A boxed aside — good for context, caveats, or a link to something live.</p>
+      </div>
+
+      <h3>A smaller heading</h3>
+
+      <p>More body text.</p>
+
+      <!-- An image:
+      <figure>
+        <img src="images/your-image.jpg" alt="Describe the image for people who cannot see it.">
+        <figcaption>Caption.</figcaption>
+      </figure>
+      -->
+
+    </div>
+    <!-- ===================== END OF POST ===================== -->
+
+    <div class="post-foot">
+      <div class="card-tags">{{TAGS_HTML}}</div>
+      <p class="dh-meta"><a href="index.html">&larr; Back to all writing</a></p>
+    </div>
+  </article>
+
+  <section class="dh-wrap post-more" id="post-more">
+    <p class="dh-eyebrow">Keep reading</p>
+    <h2>More writing</h2>
+    <div class="more-grid" id="more-grid" data-current-slug="{{SLUG}}"></div>
+  </section>
+
+  <section class="blog-cta">
+    <div class="dh-wrap">
+      <p class="dh-eyebrow">Build with us</p>
+      <h2>Working on something similar?</h2>
+      <p>If you are adopting a Digital Public Good, running an open-source deployment in the public sector, or thinking about doing either — we would like to hear about it.</p>
+      <div class="btn-row">
+        <a href="../index.html#contact" class="btn-solid">Partner with us</a>
+        <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer" class="btn-ghost">Pelsung on GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="dh-footer">
+  <div class="inner">
+    <div class="brand">
+      <span aria-hidden="true" class="dh-flagmark"></span>
+      <span>Druk.help</span>
+    </div>
+    <p>Open technology. Public infrastructure. Bhutan to the world.</p>
+    <p>A program by <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer">Pelsung</a></p>
+    <p class="legal">&copy; 2026 Druk.help &middot; <!--email_off-->hello@druk.help<!--/email_off--></p>
+  </div>
+  <div class="stripe" aria-hidden="true"></div>
+</footer>
+
+<script src="posts.js"></script>
+<script src="blog.js"></script>
+</body>
+</html>

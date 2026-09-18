@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400" role="img" aria-label="Twenty district tiles, fifteen filled to show where palliative care services already run">
+  <rect width="600" height="400" fill="#EFE7D8"/>
+
+  <!-- faint dot grid -->
+  <g fill="#D8CCB6">
+    <g id="pc-row">
+      <circle cx="40" cy="40" r="2"/><circle cx="80" cy="40" r="2"/><circle cx="120" cy="40" r="2"/>
+      <circle cx="160" cy="40" r="2"/><circle cx="200" cy="40" r="2"/><circle cx="240" cy="40" r="2"/>
+      <circle cx="280" cy="40" r="2"/><circle cx="320" cy="40" r="2"/><circle cx="360" cy="40" r="2"/>
+      <circle cx="400" cy="40" r="2"/><circle cx="440" cy="40" r="2"/><circle cx="480" cy="40" r="2"/>
+      <circle cx="520" cy="40" r="2"/><circle cx="560" cy="40" r="2"/>
+    </g>
+    <use href="#pc-row" y="40"/><use href="#pc-row" y="80"/><use href="#pc-row" y="120"/>
+    <use href="#pc-row" y="160"/><use href="#pc-row" y="200"/><use href="#pc-row" y="240"/>
+    <use href="#pc-row" y="280"/><use href="#pc-row" y="320"/>
+  </g>
+
+  <!-- fifteen districts with services running -->
+  <g>
+    <rect x="60" y="56" width="80" height="60" rx="9" fill="#4E7A46"/>
+    <rect x="160" y="56" width="80" height="60" rx="9" fill="#D9A62E"/>
+    <rect x="260" y="56" width="80" height="60" rx="9" fill="#4E7A46"/>
+    <rect x="360" y="56" width="80" height="60" rx="9" fill="#3F6E9D"/>
+    <rect x="460" y="56" width="80" height="60" rx="9" fill="#4E7A46"/>
+
+    <rect x="60" y="136" width="80" height="60" rx="9" fill="#D9A62E"/>
+    <rect x="160" y="136" width="80" height="60" rx="9" fill="#4E7A46"/>
+    <rect x="260" y="136" width="80" height="60" rx="9" fill="#8E2B1F"/>
+    <rect x="360" y="136" width="80" height="60" rx="9" fill="#4E7A46"/>
+    <rect x="460" y="136" width="80" height="60" rx="9" fill="#D9A62E"/>
+
+    <rect x="60" y="216" width="80" height="60" rx="9" fill="#3F6E9D"/>
+    <rect x="160" y="216" width="80" height="60" rx="9" fill="#4E7A46"/>
+    <rect x="260" y="216" width="80" height="60" rx="9" fill="#D9A62E"/>
+    <rect x="360" y="216" width="80" height="60" rx="9" fill="#4E7A46"/>
+    <rect x="460" y="216" width="80" height="60" rx="9" fill="#22170F"/>
+  </g>
+
+  <!-- the care mark, on the district at the centre -->
+  <g fill="#F6F0E4">
+    <rect x="293" y="150" width="14" height="32" rx="4"/>
+    <rect x="284" y="159" width="32" height="14" rx="4"/>
+  </g>
+
+  <!-- five districts still to reach -->
+  <g fill="none" stroke="#A2957F" stroke-width="2" stroke-dasharray="7 7">
+    <rect x="60" y="296" width="80" height="60" rx="9"/>
+    <rect x="160" y="296" width="80" height="60" rx="9"/>
+    <rect x="260" y="296" width="80" height="60" rx="9"/>
+    <rect x="360" y="296" width="80" height="60" rx="9"/>
+    <rect x="460" y="296" width="80" height="60" rx="9"/>
+  </g>
+
+  <rect x="0.5" y="0.5" width="599" height="399" fill="none" stroke="#DCD2C0"/>
+</svg>

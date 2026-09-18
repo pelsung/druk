@@ -142,8 +142,8 @@ a:hover { color: #6E1F15; }
 .dh-nav > a:hover { color: var(--accent, #8E2B1F); }
 .dh-gh { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 999px; border: 1px solid #DCD2C0; color: #231A12; }
 .dh-gh:hover { background: rgba(35, 26, 18, 0.06); border-color: #C8BCA6; color: #231A12; }
-.dh-cta { background: var(--accent, #8E2B1F); color: #F6F0E4; font-size: 14px; font-weight: 600; padding: 9px 18px; border-radius: 999px; white-space: nowrap; }
-.dh-cta:hover { filter: brightness(0.9); color: #F6F0E4; }
+.dh-cta, .dh-nav > a.dh-cta { background: var(--accent, #8E2B1F); color: #FFFFFF; font-size: 14px; font-weight: 600; padding: 9px 18px; border-radius: 999px; white-space: nowrap; }
+.dh-cta:hover, .dh-nav > a.dh-cta:hover { filter: brightness(0.9); color: #FFFFFF; }
 .dh-burger { display: none; }
 .dh-panel { display: none; }
 .dh-bars { position: relative; display: block; width: 20px; height: 14px; }
@@ -166,13 +166,16 @@ a:hover { color: #6E1F15; }
   .dh-panel-inner > a { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 15px 2px; font-size: 17px; font-weight: 500; color: #231A12; border-bottom: 1px solid rgba(35, 26, 18, 0.09); -webkit-tap-highlight-color: transparent; }
   .dh-panel-inner > a:active { color: var(--accent, #8E2B1F); }
   .dh-panel-idx { font-family: 'Geist Mono', monospace; font-size: 11.5px; font-weight: 500; letter-spacing: 0.14em; color: #A2957F; }
-  .dh-panel-cta { justify-content: center !important; margin-top: 18px; padding: 15px 22px !important; background: var(--accent, #8E2B1F); color: #F6F0E4 !important; font-size: 16px !important; font-weight: 600 !important; border: 0 !important; border-radius: 999px; }
+  .dh-panel-cta { justify-content: center !important; margin-top: 18px; padding: 15px 22px !important; background: var(--accent, #8E2B1F); color: #FFFFFF !important; font-size: 16px !important; font-weight: 600 !important; border: 0 !important; border-radius: 999px; }
   .dh-panel-gh { justify-content: center !important; gap: 10px !important; margin-top: 10px; padding: 13px 22px !important; border: 1.5px solid #DCD2C0 !important; border-radius: 999px; font-size: 15px !important; font-weight: 600 !important; }
 }
 @media (max-width: 380px) {
   .dh-bar { padding: 11px 16px; }
   .dh-panel-inner { padding: 6px 16px 18px; }
 }
+
+/* ---- From the blog: cover images stay flat, no hover transform ---- */
+#writing article h3 a { transition: color .2s ease; }
 </style>
 </helmet>
 <div ref="{{ rootRef }}" style="--accent: #8E2B1F; min-height: 100vh; background: #F6F0E4; color: #231A12; overflow-x: clip">
@@ -190,6 +193,7 @@ a:hover { color: #6E1F15; }
         <a href="#how">How we work</a>
         <a href="#why">Why Bhutan</a>
         <a href="#principles">Principles</a>
+        <a href="#writing">Blog</a>
         <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer" class="dh-gh" aria-label="Pelsung on GitHub" title="Pelsung on GitHub"><svg viewBox="0 0 16 16" width="17" height="17" fill="currentColor" aria-hidden="true" style="display: block"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path></svg></a>
         <a href="#contact" class="dh-cta">Partner with us</a>
       </nav>
@@ -206,6 +210,7 @@ a:hover { color: #6E1F15; }
         <a href="#why" onclick="{{ closeMenu }}">Why Bhutan<span class="dh-panel-idx" aria-hidden="true">06</span></a>
         <a href="#ecosystem" onclick="{{ closeMenu }}">Ecosystem<span class="dh-panel-idx" aria-hidden="true">07</span></a>
         <a href="#principles" onclick="{{ closeMenu }}">Principles<span class="dh-panel-idx" aria-hidden="true">08</span></a>
+        <a href="#writing" onclick="{{ closeMenu }}">Blog<span class="dh-panel-idx" aria-hidden="true">09</span></a>
         <a href="#contact" class="dh-panel-cta" onclick="{{ closeMenu }}">Partner with us</a>
         <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer" class="dh-panel-gh" onclick="{{ closeMenu }}"><svg viewBox="0 0 16 16" width="17" height="17" fill="currentColor" aria-hidden="true" style="display: block"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path></svg> Pelsung on GitHub</a>
       </nav>
@@ -240,7 +245,7 @@ a:hover { color: #6E1F15; }
       <p style="font-size: 17.5px; line-height: 1.65; color: #5E5648; max-width: 64ch; margin: 22px 0 0; text-wrap: pretty">We help governments, communities, developers, and public-interest organizations adopt proven Digital Public Goods, build new open technologies where gaps exist, and deploy them sustainably at population scale.</p>
       <p style="font-size: 17.5px; line-height: 1.65; color: #5E5648; max-width: 64ch; margin: 20px 0 0; text-wrap: pretty">Our ambition is simple: <strong style="color: #231A12">use technology that belongs to everyone to build public systems that work for everyone.</strong></p>
       <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 44px">
-        <a href="#work" style="background: var(--accent, #8E2B1F); color: #F6F0E4; font-size: 15.5px; font-weight: 600; padding: 14px 28px; border-radius: 999px" style-hover="filter: brightness(0.9); color: #F6F0E4">Explore our work</a>
+        <a href="#work" style="background: var(--accent, #8E2B1F); color: #FFFFFF; font-size: 15.5px; font-weight: 600; padding: 14px 28px; border-radius: 999px" style-hover="filter: brightness(0.9); color: #FFFFFF">Explore our work</a>
         <a href="#contact" style="border: 1.5px solid #231A12; color: #231A12; font-size: 15.5px; font-weight: 600; padding: 13px 28px; border-radius: 999px" style-hover="background: rgba(35, 26, 18, 0.06); color: #231A12">Partner with us</a>
         <sc-if value="{{ showScript }}" hint-placeholder-val="{{ true }}">
           <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; letter-spacing: 0.06em; color: #8C816F; margin: 0"><span style="font-family: 'Noto Serif Tibetan', serif; font-size: 15px; color: #B88A1E; letter-spacing: 0">འབྲུག</span> · Druk, the Thunder Dragon</p>
@@ -367,7 +372,7 @@ a:hover { color: #6E1F15; }
             <p style="font-size: 15.5px; line-height: 1.65; color: #5E5648; margin: 10px 0 0; text-wrap: pretty">Patients registered, visits, diagnosis split, nursing care, and mobility&mdash;read straight from the Bhutan instance.</p>
           </div>
           <div style="flex: 0 1 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 16px">
-            <a href=" https://data.care.druk.help/public/dashboard/21ae06e9-1c1b-4961-8681-622fced04a37?date=&users=" target="_blank" rel="noopener noreferrer" style="background: var(--accent, #8E2B1F); color: #F6F0E4; font-size: 15px; font-weight: 600; padding: 13px 26px; border-radius: 999px" style-hover="filter: brightness(0.9); color: #F6F0E4">Open the live dashboard</a>
+            <a href=" https://data.care.druk.help/public/dashboard/21ae06e9-1c1b-4961-8681-622fced04a37?date=&users=" target="_blank" rel="noopener noreferrer" style="background: var(--accent, #8E2B1F); color: #FFFFFF; font-size: 15px; font-weight: 600; padding: 13px 26px; border-radius: 999px" style-hover="filter: brightness(0.9); color: #FFFFFF">Open the live dashboard</a>
             <div style="display: flex; flex-wrap: wrap; gap: 8px 22px; font-family: 'Geist Mono', monospace; font-size: 13px">
               <a href="https://care.druk.help" target="_blank" rel="noopener noreferrer" style="color: #5E5648" style-hover="color: var(--accent, #8E2B1F)">care.druk.help</a>
               <a href="https://github.com/ohcnetwork/care" target="_blank" rel="noopener noreferrer" style="color: #5E5648" style-hover="color: var(--accent, #8E2B1F)">CARE on GitHub</a>
@@ -541,12 +546,43 @@ a:hover { color: #6E1F15; }
     </div>
   </section>
 
+  <section id="writing" data-screen-label="From the blog" style="border-top: 1px solid #DCD2C0; padding: 104px 0 112px; scroll-margin-top: 80px">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 0 32px">
+      <div data-reveal="" style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px 56px">
+        <div style="flex: 1 1 420px">
+          <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; font-weight: 500; letter-spacing: 0.14em; color: var(--accent, #8E2B1F); margin: 0; display: flex; align-items: center; gap: 10px"><span style="width: 7px; height: 7px; background: var(--accent, #8E2B1F); transform: rotate(45deg); display: inline-block"></span>09</p>
+          <h2 style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(36px, 4.6vw, 58px); line-height: 1.04; letter-spacing: -0.005em; margin: 18px 0 0">From the blog</h2>
+          <p style="font-size: 17.5px; line-height: 1.65; color: #5E5648; margin: 18px 0 0; max-width: 58ch; text-wrap: pretty">Notes on what we are adopting, deploying, and learning&mdash;written for the people doing the same work elsewhere.</p>
+        </div>
+        <a href="blog/index.html" style="border: 1.5px solid #231A12; color: #231A12; font-size: 15.5px; font-weight: 600; padding: 13px 28px; border-radius: 999px; white-space: nowrap" style-hover="background: rgba(35, 26, 18, 0.06); color: #231A12">Read all writing</a>
+      </div>
+      <!-- BLOG:START — regenerated by blog/new-post.mjs from blog/posts.js; edit posts there, not here -->
+      <div style="margin-top: 48px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0 56px">
+        <article data-reveal="" style="border-top: 1px solid #DCD2C0; padding: 28px 0 32px">
+          <a href="blog/expanding-palliative-care-across-bhutan.html" style="display: block; margin: 0 0 20px; border-radius: 10px; overflow: hidden; background: #EFE7D8" style-hover="opacity: 0.92"><img src="blog/images/blog2.jpeg" alt="" loading="lazy" width="600" height="400" style="display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover"></a>
+          <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; letter-spacing: 0.06em; color: #8C816F; margin: 0">15 September 2026</p>
+          <h3 style="font-family: 'Bodoni Moda', serif; font-size: 22px; font-weight: 500; line-height: 1.2; margin: 12px 0 0"><a href="blog/expanding-palliative-care-across-bhutan.html" style="color: #231A12" style-hover="color: var(--accent, #8E2B1F)">Expanding Palliative Care Across Bhutan</a></h3>
+          <p style="font-size: 15.5px; line-height: 1.65; color: #5E5648; margin: 10px 0 0; text-wrap: pretty">Palliative care already runs in 15 districts. Reaching the rest will take volunteers, caregivers, and a training programme the team is about to join.</p>
+          <p style="margin: 16px 0 0"><a href="blog/expanding-palliative-care-across-bhutan.html" style="font-family: 'Geist Mono', monospace; font-size: 12.5px; font-weight: 500; letter-spacing: 0.1em; color: var(--accent, #8E2B1F)" style-hover="color: #6E1F15">READ &rarr;</a></p>
+        </article>
+        <article data-reveal="" style="border-top: 1px solid #DCD2C0; padding: 28px 0 32px">
+          <a href="blog/building-sustainable-digital-solutions-bhutan.html" style="display: block; margin: 0 0 20px; border-radius: 10px; overflow: hidden; background: #EFE7D8" style-hover="opacity: 0.92"><img src="blog/images/building-sustainable-digital-solutions-bhutan.svg" alt="" loading="lazy" width="600" height="400" style="display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover"></a>
+          <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; letter-spacing: 0.06em; color: #8C816F; margin: 0">10 September 2026</p>
+          <h3 style="font-family: 'Bodoni Moda', serif; font-size: 22px; font-weight: 500; line-height: 1.2; margin: 12px 0 0"><a href="blog/building-sustainable-digital-solutions-bhutan.html" style="color: #231A12" style-hover="color: var(--accent, #8E2B1F)">Building Sustainable Digital Solutions for Healthcare and Disability Support in Bhutan</a></h3>
+          <p style="font-size: 15.5px; line-height: 1.65; color: #5E5648; margin: 10px 0 0; text-wrap: pretty">Two meetings in one day, with GMC and DPOB, on what it would take to build digital tools Bhutan can own, sustain and scale from within.</p>
+          <p style="margin: 16px 0 0"><a href="blog/building-sustainable-digital-solutions-bhutan.html" style="font-family: 'Geist Mono', monospace; font-size: 12.5px; font-weight: 500; letter-spacing: 0.1em; color: var(--accent, #8E2B1F)" style-hover="color: #6E1F15">READ &rarr;</a></p>
+        </article>
+      </div>
+      <!-- BLOG:END -->
+    </div>
+  </section>
+
   <div aria-hidden="true" style="height: 34px; background: radial-gradient(circle at 46px 17px, #D9A62E 0 6.5px, rgba(217, 166, 46, 0) 7.5px) 0 0 / 92px 34px repeat-x, #7E2418; border-top: 3px solid #E6D6B4; border-bottom: 3px solid #E6D6B4"></div>
 
   <section id="ambition" data-screen-label="Our ambition" style="background: #22170F; color: #F3EDE2; padding: 112px 0; scroll-margin-top: 80px">
     <div style="max-width: 1180px; margin: 0 auto; padding: 0 32px">
       <div data-reveal="">
-        <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; font-weight: 500; letter-spacing: 0.14em; color: #D9A62E; margin: 0; display: flex; align-items: center; gap: 10px"><span style="width: 7px; height: 7px; background: #D9A62E; transform: rotate(45deg); display: inline-block"></span>09 · Our ambition</p>
+        <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; font-weight: 500; letter-spacing: 0.14em; color: #D9A62E; margin: 0; display: flex; align-items: center; gap: 10px"><span style="width: 7px; height: 7px; background: #D9A62E; transform: rotate(45deg); display: inline-block"></span>10 · Our ambition</p>
         <h2 style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(38px, 5vw, 66px); line-height: 1.04; letter-spacing: -0.005em; margin: 20px 0 0; max-width: 22ch; text-wrap: balance">Bhutan as a global contributor to Digital Public Goods.</h2>
         <p style="font-size: 17.5px; line-height: 1.65; color: #B3A897; margin: 24px 0 0">We imagine a future where Bhutan:</p>
       </div>
@@ -565,7 +601,7 @@ a:hover { color: #6E1F15; }
   <section id="contact" data-screen-label="Build with us" style="background: #22170F; color: #F3EDE2; border-top: 1px solid rgba(243, 237, 226, 0.16); padding: 112px 0; scroll-margin-top: 80px">
     <div style="max-width: 1180px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 48px 80px">
       <div data-reveal="">
-        <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; font-weight: 500; letter-spacing: 0.14em; color: #D9A62E; margin: 0; display: flex; align-items: center; gap: 10px"><span style="width: 7px; height: 7px; background: #D9A62E; transform: rotate(45deg); display: inline-block"></span>10</p>
+        <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; font-weight: 500; letter-spacing: 0.14em; color: #D9A62E; margin: 0; display: flex; align-items: center; gap: 10px"><span style="width: 7px; height: 7px; background: #D9A62E; transform: rotate(45deg); display: inline-block"></span>11</p>
         <sc-if value="{{ showScript }}" hint-placeholder-val="{{ true }}">
           <p style="font-family: 'Noto Serif Tibetan', serif; font-size: clamp(30px, 3.4vw, 42px); line-height: 1.5; color: #D9A62E; margin: 22px 0 0">བཀྲ་ཤིས་བདེ་ལེགས།</p>
           <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; letter-spacing: 0.1em; color: #8C816F; margin: 6px 0 0">TASHI DELEK</p>
@@ -578,7 +614,7 @@ a:hover { color: #6E1F15; }
         <p style="margin: 0; text-wrap: pretty">Whether you are building a Digital Public Good, looking to deploy one in Bhutan, or exploring how Bhutan can support deployments elsewhere, we would like to hear from you.</p>
         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 18px">
           <!--email_off-->
-          <a href="mailto:hello@druk.help" style="background: #D9A62E; color: #22170F; font-size: 15.5px; font-weight: 600; padding: 14px 28px; border-radius: 999px" style-hover="filter: brightness(1.06); color: #22170F">Partner with Druk.help</a>
+          <a href="mailto:hello@druk.help" style="background: #A8321F; color: #FFFFFF; border: 1.5px solid rgba(243, 237, 226, 0.35); font-size: 15.5px; font-weight: 600; padding: 13px 28px; border-radius: 999px" style-hover="background: #C2431C; color: #FFFFFF; border-color: rgba(243, 237, 226, 0.75)">Partner with Druk.help</a>
           <a href="mailto:hello@druk.help?subject=Contributing%20to%20Druk.help" style="border: 1.5px solid rgba(243, 237, 226, 0.4); color: #F3EDE2; font-size: 15.5px; font-weight: 600; padding: 13px 28px; border-radius: 999px" style-hover="border-color: #F3EDE2; color: #F3EDE2">Contribute</a>
           <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 9px; border: 1.5px solid rgba(243, 237, 226, 0.4); color: #F3EDE2; font-size: 15.5px; font-weight: 600; padding: 13px 24px; border-radius: 999px" style-hover="border-color: #F3EDE2; color: #F3EDE2"><svg viewBox="0 0 16 16" width="17" height="17" fill="currentColor" aria-hidden="true" style="display: block"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path></svg> GitHub</a>
           <a href="mailto:hello@druk.help" style="font-family: 'Geist Mono', monospace; font-size: 14.5px; color: #D9A62E" style-hover="color: #F3EDE2">hello@druk.help</a>
@@ -595,6 +631,7 @@ a:hover { color: #6E1F15; }
         <span style="font-family: 'Bodoni Moda', serif; font-weight: 600; font-size: 20px">Druk.help</span>
       </div>
       <p style="font-size: 14.5px; color: #B3A897; margin: 0">Open technology. Public infrastructure. Bhutan to the world.</p>
+      <a href="blog/index.html" style="font-size: 14.5px; color: #D9A62E; font-weight: 600" style-hover="color: #F3EDE2">Read the blog</a>
       <p style="font-size: 14.5px; color: #B3A897; margin: 0">A program by <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer" style="color: #D9A62E; font-weight: 600" style-hover="color: #F3EDE2">Pelsung</a></p>
       <a href="https://github.com/pelsung/" target="_blank" rel="noopener noreferrer" aria-label="Pelsung on GitHub" style="display: inline-flex; align-items: center; gap: 9px; font-family: 'Geist Mono', monospace; font-size: 13px; color: #D9A62E" style-hover="color: #F3EDE2"><svg viewBox="0 0 16 16" width="17" height="17" fill="currentColor" aria-hidden="true" style="display: block"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path></svg> github.com/pelsung</a>
       <p style="font-family: 'Geist Mono', monospace; font-size: 12.5px; color: #8C816F; margin: 0">© 2026 Druk.help · <!--email_off-->hello@druk.help<!--/email_off--></p>
