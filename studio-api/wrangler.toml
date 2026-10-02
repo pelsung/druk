@@ -1,0 +1,12 @@
+name = "druk-studio"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+REPO = "pelsung/druk"
+BRANCH = "main"
+ALLOWED_ORIGIN = "*"   # set to the site's origin, e.g. "https://druk.help"
+
+# Secrets — never put these in this file:
+#   npx wrangler secret put GITHUB_TOKEN
+#   npx wrangler secret put TURNSTILE_SECRET   (optional, see README.md)

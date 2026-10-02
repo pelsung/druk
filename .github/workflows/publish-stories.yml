@@ -1,0 +1,47 @@
+# When a shared journal entry or story is merged, its Markdown file lands in
+# content/journal/ or content/stories/. This builds its page, the lists, the
+# front page cards and the sitemap from it, and commits them — the site then
+# updates as usual.
+name: Publish shared journal entries and stories
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/journal/**'
+      - 'content/stories/**'
+      - 'journal/_template.html'
+      - 'stories/_template.html'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-shared
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build pages
+        run: node journal/sync.mjs
+
+      - name: Commit what changed
+        run: |
+          git config user.name "druk-help-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A journal stories content sitemap.xml index.html
+          if git diff --cached --quiet; then
+            echo "Nothing to publish."
+          else
+            git commit -m "Publish shared journal entries and stories"
+            git push
+          fi

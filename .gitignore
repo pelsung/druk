@@ -1,1 +1,11 @@
 .gstack/
+
+# pull requests made by the local preview (studio-api/local.mjs)
+.local-review/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example

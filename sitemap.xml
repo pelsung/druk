@@ -7,19 +7,25 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://druk.help/blog/</loc>
+    <loc>https://druk.help/journal/</loc>
     <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://druk.help/blog/expanding-palliative-care-across-bhutan.html</loc>
+    <loc>https://druk.help/stories/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://druk.help/journal/expanding-palliative-care-across-bhutan.html</loc>
     <lastmod>2026-09-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://druk.help/blog/building-sustainable-digital-solutions-bhutan.html</loc>
+    <loc>https://druk.help/journal/building-sustainable-digital-solutions-bhutan.html</loc>
     <lastmod>2026-09-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
