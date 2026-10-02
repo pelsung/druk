@@ -26,9 +26,16 @@ in `.local-review/` (ignored by git).
 ```bash
 cd studio-api
 npx wrangler login
-npx wrangler secret put GITHUB_TOKEN     
-npx wrangler deploy
+npx wrangler secret put GITHUB_TOKEN --config wrangler.toml
+npx wrangler deploy --config wrangler.toml
 ```
+
+Always pass `--config wrangler.toml` here. The `druk/` folder has its own
+`wrangler.jsonc` (a static-site worker named `druk`), and Wrangler picks a
+`wrangler.jsonc` in a parent folder before the `wrangler.toml` next to it, so
+without the flag a command meant for this endpoint goes to that other worker.
+
+The endpoint is deployed at **https://druk-studio.studio-api.workers.dev**.
 
 `deploy` prints the worker's address, e.g.
 `https://druk-studio.<your-account>.workers.dev`. Put it in
@@ -59,8 +66,8 @@ protection, add Cloudflare Turnstile (free):
 1. Cloudflare dashboard → Turnstile → add the site's domain.
 2. Put the **site key** in `stories/share.html`:
    `<div class="cf-turnstile" data-sitekey="YOUR-SITE-KEY" hidden></div>`
-3. `npx wrangler secret put TURNSTILE_SECRET` with the **secret key**, then
-   `npx wrangler deploy`.
+3. `npx wrangler secret put TURNSTILE_SECRET --config wrangler.toml` with the
+   **secret key**, then `npx wrangler deploy --config wrangler.toml`.
 
 ### Publishing what was merged
 
@@ -71,7 +78,9 @@ make sure "Workflow permissions" allows **Read and write**.
 
 ## Changing things later
 
-- New token: `npx wrangler secret put GITHUB_TOKEN`. Revoke the old one on GitHub.
-- Errors from GitHub are logged, not shown on the page: `npx wrangler tail`.
+- New token: `npx wrangler secret put GITHUB_TOKEN --config wrangler.toml`.
+  Revoke the old one on GitHub.
+- Errors from GitHub are logged, not shown on the page:
+  `npx wrangler tail --config wrangler.toml`.
 - If a studio password was set up earlier, it is no longer used:
-  `npx wrangler secret delete STUDIO_PASSWORD`.
+  `npx wrangler secret delete STUDIO_PASSWORD --config wrangler.toml`.

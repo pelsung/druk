@@ -7,6 +7,7 @@ REPO = "pelsung/druk"
 BRANCH = "main"
 ALLOWED_ORIGIN = "*"   # set to the site's origin, e.g. "https://druk.help"
 
-# Secrets — never put these in this file:
-#   npx wrangler secret put GITHUB_TOKEN
-#   npx wrangler secret put TURNSTILE_SECRET   (optional, see README.md)
+# Secrets — never put these in this file. Run from studio-api/, always with
+# --config (the druk/ folder's own wrangler.jsonc would be picked otherwise):
+#   npx wrangler secret put GITHUB_TOKEN --config wrangler.toml
+#   npx wrangler secret put TURNSTILE_SECRET --config wrangler.toml   (optional, see README.md)
