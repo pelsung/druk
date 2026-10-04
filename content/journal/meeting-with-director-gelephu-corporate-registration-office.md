@@ -23,4 +23,4 @@ The registration process is expected to take approximately two weeks, but prior 
 
 **What happened?** There was a quiet sense of fulfillment while walking out of the office after the meeting. The path forward feels clear and made lighter by the presence of another, appreciating our vision and mission.
 
-**What’s next?** Varun will meet CSP (Corporate Service Provider) to carry registration forward, then we submit our Expression of Interest.
+**What’s next?** Varun will meet CSP (Corporate Service Provider to carry registration forward, then we submit our Expression of Interest.
