@@ -33,5 +33,13 @@ window.DRUK_ENTRIES = [
       "Healthcare",
       "Partnerships"
     ]
+  },
+  {
+    "slug": "the-beginning",
+    "title": "The beginning",
+    "date": "2026-08-31",
+    "author": "Druk.help",
+    "excerpt": "Pelsup participants, the Pelsung ED, mentors, and professionals gathered for the opening of the program. The program began with prayers, followed by a discussion on Pelsung…",
+    "image": "images/the-beginning.jpg"
   }
 ];
