@@ -9,6 +9,14 @@
 
 window.DRUK_ENTRIES = [
   {
+    "slug": "meeting-with-director-gelephu-corporate-registration-office-kvar",
+    "title": "Developing the Story and Journal Sections for Druk.Help",
+    "date": "2026-10-04",
+    "author": "Druk.help",
+    "excerpt": "We worked on developing the Story and Journal sections for Druk.Help. These sections are designed to give people a space to share their experiences, thoughts, reflections, and…",
+    "image": "images/meeting-with-director-gelephu-corporate-registration-office-kvar.jpg"
+  },
+  {
     "slug": "meeting-with-director-gelephu-corporate-registration-office",
     "title": "Meeting with Director, Gelephu Corporate Registration Office",
     "date": "2026-09-22",
