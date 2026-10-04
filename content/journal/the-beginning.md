@@ -12,7 +12,7 @@ Pelsup participants, the Pelsung ED, mentors, and professionals gathered for the
 
 ## Personal reflection
 
-**Why did we come for the meeting?** We came to learn our vision for a shared goal
+**Why did we come for the meeting?** We came together to learn the shared vision and goals.
 
 **What happened?** The program inspired and motivated us with the potential we could achieve in the Bhutanese health system.
 
