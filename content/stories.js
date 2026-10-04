@@ -10,4 +10,14 @@
    put a Markdown file in content/stories/ and run node journal/sync.mjs.
    ========================================================================== */
 
-window.DRUK_STORIES = [];
+window.DRUK_STORIES = [
+  {
+    "slug": "what-we-learned",
+    "title": "What we learned",
+    "date": "2026-10-02",
+    "author": "sabika",
+    "excerpt": "Our field visit to palliative care was an emotional and meaningful experience. Before the visit, we had a limited understanding of what palliative care involved. Listening to the…",
+    "image": "images/what-we-learned.jpg",
+    "category": "Palliative Care"
+  }
+];

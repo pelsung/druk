@@ -17,7 +17,7 @@ Every entry follows the same shape, and the form asks for exactly this:
    - Why did we come for the meeting?
    - What happened?
    - What's next?
-6. **Within 100 words** — the description and the three answers together
+6. **Within 1000 words** — the description and the three answers together
 7. **Review and publish** — the writer sees the entry as it will appear, then
    publishes; the team gives it a final read in the pull request
 
