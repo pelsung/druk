@@ -24,7 +24,7 @@ page that shows it.
   - **A journal entry** follows the journal template: date, photo, photo
     caption, what happened (from a witness viewpoint), and a personal
     reflection — *Why did we come for the meeting? What happened? What's
-    next?* — within **100 words**. It is published under Druk.help.
+    next?* — within **1000 words**. It is published under Druk.help.
   - **A story** is in the writer's own words, under a topic they type
     themselves (common ones are suggested), with their name.
 

@@ -400,7 +400,7 @@
   var SUGGESTED_TOPICS = ['Health & Wellbeing', 'Caregiving', 'Disability', 'Palliative Care'];
   var STORY_FIELDS = ['title', 'author', 'category', 'date', 'excerpt', 'image', 'imageAlt', 'caption'];
 
-  var JOURNAL_WORD_LIMIT = 100;
+  var JOURNAL_WORD_LIMIT = 1000;
   var REFLECTION = [
     { key: 'why', question: 'Why did we come for the meeting?' },
     { key: 'what', question: 'What happened?' },
