@@ -1,5 +1,5 @@
 ---
-title: "Meeting with Director, Gelephu Corporate Registration Office"
+title: "Developing the Story and Journal Sections for Druk.Help"
 author: "Druk.help"
 date: "2026-10-04"
 image: "images/meeting-with-director-gelephu-corporate-registration-office-kvar.jpg"
