@@ -398,8 +398,8 @@
     function counted() {
       if (kind() === 'journal') {
         var words = core.journalWordCount(journalParts());
-        journalCount.textContent = words + ' / ' + LIMIT + ' words';
-        journalCount.classList.toggle('is-over', words > LIMIT);
+        journalCount.textContent = words=== 1 ? ' words': ' words';
+        journalCount.classList.remove('is-over');
         return words;
       }
       var n = core.countWords(find('#s-story').value);
@@ -503,10 +503,7 @@
       if (!form.reportValidity()) return;
       if (kind() === 'journal') {
         var words = counted();
-        if (words > LIMIT) {
-          status('Keep the journal entry within ' + LIMIT + ' words — it has ' + words + '. Trim a sentence or two.', true);
-          return;
-        }
+        
         if (!photo) { status('Add a photo — every journal entry has one.', true); return; }
       }
 
