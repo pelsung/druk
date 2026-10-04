@@ -9,6 +9,14 @@
 
 window.DRUK_ENTRIES = [
   {
+    "slug": "meeting-with-director-gelephu-corporate-registration-office",
+    "title": "Meeting with Director, Gelephu Corporate Registration Office",
+    "date": "2026-09-22",
+    "author": "Druk.help",
+    "excerpt": "We met Yeshi Choki at GMC today and shared the philosophy, vision and design of the knowledge transfer program, how knowledge and learning were transferred from mentors to the…",
+    "image": "images/meeting-with-director-gelephu-corporate-registration-office.jpg"
+  },
+  {
     "slug": "expanding-palliative-care-across-bhutan",
     "title": "Expanding Palliative Care Across Bhutan",
     "date": "2026-09-15",
