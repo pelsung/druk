@@ -377,7 +377,7 @@
 
      A journal entry (content/journal/<slug>.md) follows the journal template:
      date, photo, photo caption, what happened from a witness's viewpoint, and
-     a personal reflection on three questions — within 100 words:
+     a personal reflection on three questions:
 
        ---
        title: "Meeting the palliative care team in Mongar"
@@ -400,7 +400,6 @@
   var SUGGESTED_TOPICS = ['Health & Wellbeing', 'Caregiving', 'Disability', 'Palliative Care'];
   var STORY_FIELDS = ['title', 'author', 'category', 'date', 'excerpt', 'image', 'imageAlt', 'caption'];
 
-  var JOURNAL_WORD_LIMIT = 1000;
   var REFLECTION = [
     { key: 'why', question: 'Why did we come for the meeting?' },
     { key: 'what', question: 'What happened?' },
@@ -697,7 +696,6 @@
     cleanTopic: cleanTopic,
     topicColor: topicColor,
     topicGroups: topicGroups,
-    JOURNAL_WORD_LIMIT: JOURNAL_WORD_LIMIT,
     REFLECTION: REFLECTION,
     countWords: countWords,
     journalWordCount: journalWordCount,

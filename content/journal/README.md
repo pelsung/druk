@@ -17,12 +17,11 @@ Every entry follows the same shape, and the form asks for exactly this:
    - Why did we come for the meeting?
    - What happened?
    - What's next?
-6. **Within 1000 words** — the description and the three answers together
-7. **Review and publish** — the writer sees the entry as it will appear, then
+6. **Review and publish** — the writer sees the entry as it will appear, then
    publishes; the team gives it a final read in the pull request
 
-The form and the worker both enforce it: a missing photo, caption or answer,
-or more than 100 words, is sent back to the writer with what to fix.
+The form and the worker both enforce it: a missing photo, caption or answer is
+sent back to the writer with what to fix.
 
 ## The file
 
@@ -54,8 +53,7 @@ The two headings are part of the template: on the page they become the
 points of the **In this article** list, with the three questions beneath
 **Personal reflection**. The photo sits in `journal/images/`. Journal entries
 carry no personal name; they are published under **Druk.help** like the rest
-of the journal. When
-editing one in a pull request, keep it within 100 words.
+of the journal.
 
 After a merge, the GitHub Action turns the file into `journal/<slug>.html`,
 adds it to `journal/entries.js`, the Journal page, the front page's

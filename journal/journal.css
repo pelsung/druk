@@ -548,7 +548,7 @@ img { max-width: 100%; height: auto; }
 .sh-done h2 { margin-top: 12px !important; }
 .sh-done p { color: var(--muted); max-width: 46ch; margin: 10px auto 0; }
 
-/* the journal template's parts, and the word limit */
+/* the journal template's parts */
 .sh-group { display: flex; flex-direction: column; gap: 22px; }
 .sh-group[hidden] { display: none; }
 .sh-reflect { margin: 0; padding: 18px 18px 20px; border: 1px solid var(--surface-line); border-radius: 14px; background: #FFFDF8; }

@@ -87,7 +87,7 @@ async function submit(gh, env, input, ip) {
   let meta, body, details;
   if (kind === 'journal') {
     /* the journal template: date, photo, caption, what happened as a witness
-       saw it, and a reflection on three questions — within 100 words */
+       saw it, and a reflection on three questions */
     const parts = { description: clean(input.description, 4000) };
     core.REFLECTION.forEach((r) => { parts[r.key] = clean(input[r.key], 2000); });
     const date = /^\d{4}-\d{2}-\d{2}$/.test(input.date || '') ? input.date : '';
@@ -100,12 +100,9 @@ async function submit(gh, env, input, ip) {
       if (!core.countWords(parts[r.key])) throw fail(400, 'Answer “' + r.question + '” in your reflection.');
     }
     const words = core.journalWordCount(parts);
-    if (words > core.JOURNAL_WORD_LIMIT) {
-      throw fail(400, 'Keep the journal entry within ' + core.JOURNAL_WORD_LIMIT + ' words — it has ' + words + '.');
-    }
     meta = { title, author: 'Druk.help', date };
     body = core.journalBody(parts);
-    details = ['- **Date:** ' + date, '- **Words:** ' + words + ' of ' + core.JOURNAL_WORD_LIMIT, '- **Photo caption:** ' + line(photo.caption, 200)];
+    details = ['- **Date:** ' + date, '- **Words:** ' + words, '- **Photo caption:** ' + line(photo.caption, 200)];
   } else {
     /* a story: its writer's own topic, their words, and their name */
     const name = line(input.name, 80);
