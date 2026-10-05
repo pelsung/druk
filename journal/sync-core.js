@@ -64,6 +64,25 @@
     });
   }
 
+  /* Journal entries are numbered by their date, oldest first: 01, 02, …
+     An entry dated earlier than others takes its place in that order, and
+     the ones after it move up by one. Entries from the same day are numbered
+     in the order entries.js lists them, from the bottom up.
+     Returns { slug: "05", … }. */
+  function entryNumbers(entries) {
+    var order = (entries || []).map(function (entry, index) {
+      return { entry: entry, index: index };
+    }).sort(function (a, b) {
+      return String(a.entry.date).localeCompare(String(b.entry.date)) || b.index - a.index;
+    });
+    var width = Math.max(2, String(order.length).length);
+    var numbers = {};
+    order.forEach(function (item, n) {
+      numbers[item.entry.slug] = String(n + 1).padStart(width, '0');
+    });
+    return numbers;
+  }
+
   /* ---------- entries.js ---------- */
 
   var ENTRIES_HEADER = [
@@ -147,7 +166,7 @@
   var READ_STYLE = "font-family: 'Geist Mono', monospace; font-size: 12.5px; font-weight: 500; letter-spacing: 0.1em; color: var(--accent, #8E2B1F)";
   var IMAGE_STYLE = 'display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover';
 
-  function card(entry) {
+  function card(entry, number) {
     var href = 'journal/' + entry.slug + '.html';
     var lines = ['        <article data-reveal="" style="border-top: 1px solid #DCD2C0; padding: 28px 0 32px">'];
 
@@ -156,7 +175,7 @@
     }
 
     lines.push(
-      '          <p style="' + META_STYLE + '">' + humanDate(entry.date) + '</p>',
+      '          <p style="' + META_STYLE + '">' + (number ? 'No. ' + number + ' · ' : '') + humanDate(entry.date) + '</p>',
       '          <h3 style="' + TITLE_STYLE + '"><a href="' + href + '" style="color: #231A12" style-hover="color: var(--accent, #8E2B1F)">' + escapeHtml(entry.title) + '</a></h3>',
       '          <p style="' + EXCERPT_STYLE + '">' + escapeHtml(entry.excerpt) + '</p>',
       '          <p style="margin: 16px 0 0"><a href="' + href + '" style="' + READ_STYLE + '" style-hover="color: #6E1F15">READ &rarr;</a></p>',
@@ -166,9 +185,12 @@
   }
 
   function cardsBlock(entries) {
+    var numbers = entryNumbers(entries);
     return [
       '      <div style="margin-top: 48px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0 56px">',
-    ].concat(sortEntries(entries).slice(0, HOME_CARDS).map(card))
+    ].concat(sortEntries(entries).slice(0, HOME_CARDS).map(function (entry) {
+      return card(entry, numbers[entry.slug]);
+    }))
       .concat(['      </div>', '      ']).join('\n');
   }
 
@@ -676,6 +698,7 @@
   var api = {
     SITE_ORIGIN: SITE_ORIGIN,
     HOME_CARDS: HOME_CARDS,
+    entryNumbers: entryNumbers,
     today: today,
     humanDate: humanDate,
     escapeHtml: escapeHtml,

@@ -23,6 +23,8 @@ const core = globalThis.DrukJournal;
 
 const MAX_BODY = 12 * 1024 * 1024;
 const MAX_PHOTO = 3 * 1024 * 1024;
+/* there is no word limit: this only turns away something absurdly long */
+const MAX_TEXT = 100000;
 const PHOTO_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
 
 export default {
@@ -88,14 +90,14 @@ async function submit(gh, env, input, ip) {
   if (kind === 'journal') {
     /* the journal template: date, photo, caption, what happened as a witness
        saw it, and a reflection on three questions */
-    const parts = { description: clean(input.description, 4000) };
-    core.REFLECTION.forEach((r) => { parts[r.key] = clean(input[r.key], 2000); });
+    const parts = { description: clean(input.description, MAX_TEXT) };
+    core.REFLECTION.forEach((r) => { parts[r.key] = clean(input[r.key], MAX_TEXT); });
     const date = /^\d{4}-\d{2}-\d{2}$/.test(input.date || '') ? input.date : '';
     const latest = new Date(Date.now() + 86400000).toISOString().slice(0, 10);   /* today, in any time zone */
     if (!date || date > latest) throw fail(400, 'Pick the date of the meeting.');
     if (!photo) throw fail(400, 'Add a photo — every journal entry has one.');
     if (line(photo.caption, 200).length < 3) throw fail(400, 'Add a caption for the photo.');
-    if (core.countWords(parts.description) < 5) throw fail(400, 'Describe what happened, as you saw it.');
+    if (!parts.description) throw fail(400, 'Describe what happened, as you saw it.');
     for (const r of core.REFLECTION) {
       if (!core.countWords(parts[r.key])) throw fail(400, 'Answer “' + r.question + '” in your reflection.');
     }
@@ -107,10 +109,10 @@ async function submit(gh, env, input, ip) {
     /* a story: its writer's own topic, their words, and their name */
     const name = line(input.name, 80);
     const topic = core.cleanTopic(input.topic);
-    const story = clean(input.story, 20000);
+    const story = clean(input.story, MAX_TEXT);
     if (name.length < 2) throw fail(400, 'Add your name — it is shown with your story.');
     if (topic.length < 2) throw fail(400, 'Write what your story is about, in a word or two.');
-    if (story.length < 80) throw fail(400, 'Your story needs a few more sentences.');
+    if (!story) throw fail(400, 'Write your story.');
     meta = { title, author: name, category: topic, date: core.today() };
     body = story;
     details = ['- **Topic:** ' + topic, '- **Shown as:** ' + name, '- **Photo:** ' + (photo ? 'yes' : 'none')];

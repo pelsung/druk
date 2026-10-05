@@ -14,7 +14,17 @@ page that shows it.
 ## The pages
 
 - **`/journal/` — Journal & Stories.** The newest entry large, the next ones as
-  cards, and a side panel with the latest stories and a way to share one.
+  cards, and a side panel with the journal's contents, the latest stories and
+  a way to share one.
+
+Journal entries are **numbered by their date, oldest first** — 01, 02, … An
+entry dated earlier than others takes its place in that order and the ones
+after it move up by one, so the numbers always follow the dates. The number
+shows on the cards and above each entry's title, and every entry page has a
+**Journal contents** list in its side panel: each entry by number and title,
+under the month it is dated. Nothing is stored — the numbers are worked out
+from the dates (`entryNumbers` in `journal/sync-core.js`). Stories are not
+numbered.
 - **`/stories/` — Stories.** Every story as a card, filtered by the topics
   writers have used, with counts.
 - **`/stories/share.html` — Share your journal or story.** The public form; the

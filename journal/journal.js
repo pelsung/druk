@@ -92,8 +92,15 @@
   var ENTRIES = (window.DRUK_ENTRIES || []).slice().sort(byDate);
   var STORIES = (window.DRUK_STORIES || []).slice().sort(byDate);
 
-  /* sync-core.js, loaded before this file on the listing and share pages */
+  /* sync-core.js, loaded before this file on the listing, share and entry pages */
   var core = globalThis.DrukJournal;
+
+  /* every journal entry's number, by date, oldest first: "01", "02", … */
+  var NUMBERS = core ? core.entryNumbers(window.DRUK_ENTRIES || []) : {};
+  function numbered(entry, text) {
+    var number = NUMBERS[entry.slug];
+    return number ? "No. " + number + " · " + text : text;
+  }
 
   /* a story's topic is whatever its writer typed; the usual ones have an icon */
   var TOPIC_ICONS = {
@@ -291,7 +298,10 @@
         el("p", { class: "jx-excerpt", text: lead.excerpt || "" }),
         el("span", {
           class: "dh-meta",
-          text: formatDate(lead.date) + " · " + (lead.author || "Druk.help"),
+          text: numbered(
+            lead,
+            formatDate(lead.date) + " · " + (lead.author || "Druk.help"),
+          ),
         }),
         el("a", { class: "jx-read", href: pageUrl("journal", lead) }, [
           document.createTextNode("Read more"),
@@ -313,7 +323,12 @@
           var card = el(
             "a",
             { class: "jx-card", href: pageUrl("journal", entry) },
-            [el("span", { class: "dh-meta", text: shortDate(entry.date) })],
+            [
+              el("span", {
+                class: "dh-meta",
+                text: numbered(entry, shortDate(entry.date)),
+              }),
+            ],
           );
           if (entryTopic(entry))
             card.appendChild(
@@ -338,6 +353,9 @@
         renderRow();
       });
     renderRow();
+
+    /* the journal's contents, at the top of the side panel */
+    renderContents(document.querySelector(".jx-side .post-contents"), "");
 
     /* stories in the side panel */
     var voices = document.getElementById("jx-stories");
@@ -895,28 +913,6 @@
     slot.textContent = Math.max(1, Math.round(words / 200)) + " min read";
   }
 
-  function shortDate(iso) {
-    var parts = String(iso || "").split("-");
-    var months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    var month = months[parseInt(parts[1], 10) - 1];
-    return month
-      ? parseInt(parts[2], 10) + " " + month + " " + parts[0]
-      : iso || "";
-  }
-
   var ARROW_UP_RIGHT =
     '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>';
 
@@ -978,6 +974,13 @@
       var meta = el("span", { class: "more-card-meta" }, [
         el("time", { datetime: post.date, text: shortDate(post.date) }),
       ]);
+      /* journal entries carry their number; stories are not numbered */
+      var number = !window.DRUK_ITEMS && NUMBERS[post.slug];
+      if (number)
+        meta.insertBefore(
+          el("span", { class: "more-card-num", text: "No. " + number }),
+          meta.firstChild,
+        );
       if (topic) {
         meta.appendChild(el("i", { "aria-hidden": "true" }));
         meta.appendChild(el("span", { text: topic }));
@@ -1009,6 +1012,67 @@
       count++;
     }
     grid.setAttribute("data-count", String(count));
+  }
+
+  /* a journal entry's page: its number beside "Field notes", and the contents */
+  function initContents(article, current) {
+    var number = NUMBERS[current];
+    var badge = article.querySelector("[data-entry-number]");
+    if (badge && number) {
+      badge.textContent = "No. " + number;
+      badge.hidden = false;
+    }
+    renderContents(article.querySelector(".post-contents"), current);
+  }
+
+  /* "Journal contents": every entry by its number, under the month it is
+     dated, with the one being read (if any) marked — the whole journal at a
+     glance. Used on each entry page and on Journal & Stories. */
+  function renderContents(box, current) {
+    var entries = (window.DRUK_ENTRIES || []).filter(function (entry) {
+      return NUMBERS[entry.slug];
+    });
+    if (!box || entries.length < 2) return;
+    entries.sort(function (a, b) {
+      return NUMBERS[a.slug].localeCompare(NUMBERS[b.slug]);
+    });
+
+    var host = box.querySelector(".post-contents-list");
+    var month = "";
+    var group = null;
+    var here = null;
+    entries.forEach(function (entry) {
+      var label = formatDate(entry.date).replace(/^\d+ /, ""); /* September 2026 */
+      if (label !== month) {
+        month = label;
+        host.appendChild(el("p", { class: "post-contents-month", text: label }));
+        group = el("ol", { class: "post-contents-group" });
+        host.appendChild(group);
+      }
+      var parts = [
+        el("span", { class: "post-contents-num", text: NUMBERS[entry.slug] }),
+        el("span", { class: "post-contents-text" }, [
+          el("span", { class: "post-contents-title", text: entry.title }),
+          el("span", {
+            class: "post-contents-date",
+            text: shortDate(entry.date).replace(/ \d{4}$/, ""), /* 15 Sep */
+          }),
+        ]),
+      ];
+      var isHere = entry.slug === current;
+      var row = isHere
+        ? el("span", { class: "post-contents-row", "aria-current": "page" }, parts)
+        : el("a", { class: "post-contents-row", href: postUrl(entry) }, parts);
+      group.appendChild(el("li", {}, [row]));
+      if (isHere) here = row;
+    });
+    box.hidden = false;
+
+    /* a long journal scrolls inside the card: if this entry is further down
+       than the card shows, open the list at it */
+    if (here && here.offsetTop + here.offsetHeight > host.clientHeight) {
+      host.scrollTop = here.offsetTop - host.clientHeight / 2 + here.offsetHeight / 2;
+    }
   }
 
   /* the side panel and reading progress on an article page */
@@ -1065,6 +1129,15 @@
       };
       window.addEventListener("scroll", mark, { passive: true });
       mark();
+    }
+
+    /* a journal entry: its number, and the contents of the whole journal */
+    if (!window.DRUK_ITEMS && window.DRUK_ENTRIES) {
+      var grid = document.getElementById("more-grid");
+      var slug =
+        (grid && grid.getAttribute("data-current-slug")) ||
+        (location.pathname.split("/").pop() || "").replace(/\.html$/, "");
+      initContents(article, slug);
     }
 
     /* "Share this article": each network gets the page's address and title */
