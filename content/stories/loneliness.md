@@ -1,13 +1,13 @@
 ---
 title: "Loneliness"
 author: "Sonam Rinchen"
-category: "What i feel during home visit"
+category: "My experience during home visit"
 date: "2026-10-05"
 image: "images/loneliness.jpg"
 imageAlt: "patient home visit"
 ---
 
-What I Learned About Loneliness During a Home Visit
+What I learned about Loneliness during a home visit
 
 I went with my team and a palliative-care nurse to visit a patient at their home. Before the visit, I thought we were mainly going there to understand the patient's condition and provide whatever support was needed. I knew that palliative care was about helping patients manage their illness and maintain comfort, but I did not fully understand the emotional side of care.
 
