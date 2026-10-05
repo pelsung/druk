@@ -12,6 +12,15 @@
 
 window.DRUK_STORIES = [
   {
+    "slug": "loneliness",
+    "title": "Loneliness",
+    "date": "2026-10-05",
+    "author": "Sonam Rinchen",
+    "excerpt": "What I learned about Loneliness during a home visit",
+    "image": "images/loneliness.jpg",
+    "category": "My experience during home visit"
+  },
+  {
     "slug": "what-we-learned",
     "title": "What we learned",
     "date": "2026-10-02",
