@@ -51,6 +51,14 @@ window.DRUK_ENTRIES = [
     ]
   },
   {
+    "slug": "field-visits-to-homes-of-care-receivers",
+    "title": "Field visits to homes of care receivers",
+    "date": "2026-09-02",
+    "author": "Druk.help",
+    "excerpt": "To understand the reality on the ground, we began with field visits: the Palliative Care Unit led the first day, and the Royal Society for Senior Citizens led the second. We…",
+    "image": "images/field-visits-to-homes-of-care-receivers.jpg"
+  },
+  {
     "slug": "the-beginning",
     "title": "The beginning",
     "date": "2026-08-31",
