@@ -57,5 +57,13 @@ window.DRUK_ENTRIES = [
     "author": "Druk.help",
     "excerpt": "Pelsup participants, the Pelsung ED, mentors, and professionals gathered for the opening of the program. The program began with prayers, followed by a discussion on Pelsung…",
     "image": "images/the-beginning.jpg"
+  },
+  {
+    "slug": "the-post-immersion-program",
+    "title": "The post-Immersion program",
+    "date": "2026-08-30",
+    "author": "Druk.help",
+    "excerpt": "Writing",
+    "image": "images/the-post-immersion-program.jpg"
   }
 ];
