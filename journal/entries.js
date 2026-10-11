@@ -17,6 +17,14 @@ window.DRUK_ENTRIES = [
     "image": "images/meeting-with-the-higher-education-ministers-private-secretary.jpg"
   },
   {
+    "slug": "a-national-trust-approval-for-national-homecare-grid",
+    "title": "A national trust- Approval for national homecare grid",
+    "date": "2026-10-05",
+    "author": "Druk.help",
+    "excerpt": "The Executive Director of Pelsung emailed a signed official letter, on behalf of Pelsung, to the Department of Public Health, setting out Druk Help’s mission: to bring…",
+    "image": "images/a-national-trust-approval-for-national-homecare-grid.jpg"
+  },
+  {
     "slug": "meeting-with-director-gelephu-corporate-registration-office-kvar",
     "title": "Developing the Story and Journal Sections for Druk.Help",
     "date": "2026-10-04",
