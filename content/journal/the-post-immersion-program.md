@@ -8,7 +8,6 @@ caption: "Post immersion programs announced under the different service sectors"
 
 ## What we saw
 
-Writing
 
 After completing the three-month immersion program, which ran from March to the first week of June, Pelsung announced its first-ever Post-Immersion Programs for Pelsups from Cohorts 1 to 3. Among the various programs introduced was the Digital Public Goods (DPG) and Free and Open Source Software (FOSS) Post-Immersion Program, designed to provide further learning and practical exposure in the field.
 
