@@ -87,7 +87,7 @@ window.DRUK_ENTRIES = [
     "title": "The post-Immersion program",
     "date": "2026-08-30",
     "author": "Druk.help",
-    "excerpt": "Writing",
+    "excerpt": "After completing the three-month immersion program, which ran from March to the first week of June, Pelsung announced its first-ever Post-Immersion Programs for Pelsups from…",
     "image": "images/the-post-immersion-program.jpg"
   }
 ];
