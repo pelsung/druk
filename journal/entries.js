@@ -9,6 +9,14 @@
 
 window.DRUK_ENTRIES = [
   {
+    "slug": "meeting-with-the-higher-education-ministers-private-secretary",
+    "title": "Meeting with the Higher Education Minister’s Private Secretary",
+    "date": "2026-10-05",
+    "author": "Druk.help",
+    "excerpt": "Three of us from the Druk Help team, Thinley, Sonam and I, went to visit Mr Sreekumar.The Pelsung ED was with us, representing the Pelsung organization. He began by briefly…",
+    "image": "images/meeting-with-the-higher-education-ministers-private-secretary.jpg"
+  },
+  {
     "slug": "meeting-with-director-gelephu-corporate-registration-office-kvar",
     "title": "Developing the Story and Journal Sections for Druk.Help",
     "date": "2026-10-04",
