@@ -8,7 +8,7 @@ caption: "Meeting over a dinner with Higher Education Minister’s Private Secre
 
 ## What we saw
 
-Three of us from the Druk Help team, Thinley, Sonam and I, went to visit Mr Sreekumar.The Pelsung ED was with us, representing the Pelsung organization. He began by briefly introducing Pelsung and its current programs. Then our team shared the vision and mission of Druk Help. The discussion mainly focused on potential areas of collaboration, including exchange programs where the team could learn from Kerala’s healthcare system , learning system and other initiatives.
+From the Druk Help team, Thinley, Sonam and Rinzin,along with our mentor Varun went to visit Mr Sreekumar.The Pelsung ED accompanied the team, representing the Pelsung organization. He began by briefly introducing Pelsung and its current programs. Then our mentor, Varun shared the vision and mission of Druk Help. The discussion mainly focused on potential areas of collaboration, including exchange programs where the team could learn from Kerala’s healthcare system , learning system and other initiatives.
 
 ## Personal reflection
 
