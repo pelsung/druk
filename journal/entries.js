@@ -13,7 +13,7 @@ window.DRUK_ENTRIES = [
     "title": "Meeting with the Higher Education Minister’s Private Secretary",
     "date": "2026-10-05",
     "author": "Druk.help",
-    "excerpt": "Three of us from the Druk Help team, Thinley, Sonam and I, went to visit Mr Sreekumar.The Pelsung ED was with us, representing the Pelsung organization. He began by briefly…",
+    "excerpt": "From the Druk Help team, Thinley, Sonam and Rinzin,along with our mentor Varun went to visit Mr Sreekumar.The Pelsung ED accompanied the team, representing the Pelsung…",
     "image": "images/meeting-with-the-higher-education-ministers-private-secretary.jpg"
   },
   {
