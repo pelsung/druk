@@ -41,6 +41,14 @@ window.DRUK_ENTRIES = [
     "image": "images/meeting-with-director-gelephu-corporate-registration-office.jpg"
   },
   {
+    "slug": "meeting-the-program-officer-of-cancer-control-program",
+    "title": "Meeting the Program Officer of Cancer Control Program",
+    "date": "2026-09-15",
+    "author": "Druk.help",
+    "excerpt": "This morning, Mentor Ranjit Balaji, Thinley Dorji, and Rinzin Seldon met with Mr. Sonam Wangchuk, Program Officer of the Cancer Control Program, to learn about the current state…",
+    "image": "images/meeting-the-program-officer-of-cancer-control-program.jpg"
+  },
+  {
     "slug": "expanding-palliative-care-across-bhutan",
     "title": "Expanding Palliative Care Across Bhutan",
     "date": "2026-09-15",
