@@ -2,9 +2,6 @@ name = "druk-studio"
 main = "worker.js"
 compatibility_date = "2026-09-01"
 
-# The editor dashboard's API must answer on the same address as the dashboard, so
-# the site's own domain needs this route (keep it above [vars]; see admin/README.md):
-routes = [{ pattern = "druk.help/admin/api/*", zone_name = "druk.help" }]
 
 [vars]
 REPO = "pelsung/druk"
@@ -18,6 +15,7 @@ ALLOWED_ORIGIN = "*"   # set to the site's origin, e.g. "https://druk.help"
 
 # ---- Editor dashboard (/admin/) ---------------------------------------------
 SITE_ORIGIN = "https://druk.help"   # where "is it live yet?" looks
+# (SITE_ORIGIN is also the only website allowed to call the dashboard API from a browser.)
 
 # The editor's password is a SECRET (at least 12 characters), never written here:
 #   npx wrangler secret put ADMIN_PASSWORD --config wrangler.toml

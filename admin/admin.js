@@ -11,7 +11,19 @@
 
   var core = window.DrukJournal;
   var Ed = window.DrukEditor;
-  var API = ((document.querySelector('meta[name="admin-api"]') || {}).content || '/admin/api').replace(/\/+$/, '');
+  /* the Worker's address: on the real site it is another address (see the page's meta tag);
+     the local demo answers from the same address */
+  var API = (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? '/admin/api'
+    : ((document.querySelector('meta[name="admin-api"]') || {}).content || '/admin/api')).replace(/\/+$/, '');
+
+  /* the sign-in token lasts 12 hours; the page keeps it only in this browser */
+  var TOKEN_KEY = 'druk-admin-token';
+  function getToken() {
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+  }
+  function setToken(token) {
+    try { if (token) localStorage.setItem(TOKEN_KEY, token); else localStorage.removeItem(TOKEN_KEY); } catch (e) { /* private mode */ }
+  }
   var view = document.getElementById('view');
   var KIND_NAME = { journal: 'Journal entry', story: 'Story' };
   var PAGES = { journal: 'journal', story: 'stories' };
@@ -69,7 +81,8 @@
     var form = h('form', { class: 'card login', onsubmit: function (e) {
       e.preventDefault();
       go.disabled = true; error.hidden = true;
-      api('POST', '/login', { password: input.value }).then(function () {
+      api('POST', '/login', { password: input.value }).then(function (res) {
+        setToken(res.token);
         document.body.classList.remove('logged-out');
         start();
       }).catch(function (err) {
@@ -92,15 +105,16 @@
     var headers = {};
     if (body) headers['Content-Type'] = 'application/json';
     if (method !== 'GET') headers['X-Druk-Admin'] = '1';
+    if (getToken()) headers.Authorization = 'Bearer ' + getToken();
     return fetch(API + path, {
       method: method, headers: headers, body: body ? JSON.stringify(body) : undefined,
-      credentials: 'same-origin', cache: 'no-store', redirect: 'manual',
+      cache: 'no-store',
     }).then(function (res) {
       if (res.type === 'opaqueredirect' || res.status === 0) { showLogin(); throw new ApiError(0, 'Signed out', 'unauthenticated'); }
       return res.text().then(function (text) {
         var data = null;
         try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
-        if (res.status === 401 && !(data && data.code === 'bad_password')) { showLogin(path === '/me' ? '' : 'Your session ended. Please sign in again.'); throw new ApiError(401, 'Signed out', 'unauthenticated'); }
+        if (res.status === 401 && !(data && data.code === 'bad_password')) { setToken(''); showLogin(path === '/me' || path === '/login' ? '' : 'Your session ended. Please sign in again.'); throw new ApiError(401, 'Signed out', 'unauthenticated'); }
         if (!res.ok || data === null) {
           throw new ApiError(res.status, (data && data.error) || 'Something went wrong. Please try again.', data && data.code, data && data.errors);
         }
@@ -862,6 +876,8 @@
   }
 
   function route() {
+    /* nothing can be drawn before the data has loaded: try loading it again */
+    if (!S.stats) { start(); return; }
     var r = parseHash();
     var first = r.path[0] || 'home';
     var nav = first === 'edit' ? (r.path[1] === 'story' ? 'stories' : 'journals') : first;
@@ -923,7 +939,8 @@
 
   document.getElementById('logout').addEventListener('click', function (e) {
     e.preventDefault();
-    api('POST', '/logout').catch(function () {}).then(function () { showLogin(''); });
+    setToken('');
+    showLogin('');
   });
 
   start();

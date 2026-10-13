@@ -5,10 +5,10 @@
    kept apart from the public POST /submit endpoint in worker.js, and every
    request here is checked on its own:
 
-     1. A signed session cookie, given by POST /login in exchange for the editor
-        password (secret ADMIN_PASSWORD). The cookie is an expiry time signed with
-        a key derived from the password, lasts 12 hours, and is HttpOnly,
-        Secure and SameSite=Strict. Anything without a valid one gets 401.
+     1. A signed token, given by POST /login in exchange for the editor password
+        (secret ADMIN_PASSWORD) and sent as "Authorization: Bearer …". It is an
+        expiry time signed with a key derived from the password and lasts 12
+        hours. Anything without a valid one gets 401.
      2. Changes (anything but GET) must come from the dashboard itself: a custom
         header and a same-origin request, which a page on another site cannot send.
      3. The browser never names a file. It names a kind ("journal" | "story") and
@@ -23,8 +23,9 @@
    Config (wrangler.toml and secrets — see admin/README.md):
      GITHUB_TOKEN        secret; contents + pull requests + actions on this repo
      ADMIN_PASSWORD      secret; the editor's password, at least 12 characters
-     ADMIN_ORIGIN        optional extra allowed Origin (the site's own is always allowed)
-     SITE_ORIGIN         the public site, for checking what is live (default https://druk.help)
+     SITE_ORIGIN         the public site (default https://druk.help): the only website allowed
+                         to use this API from a browser, and where "is it live?" looks
+     ADMIN_ORIGIN        optional extra allowed Origin
      AUDIT               optional KV namespace for the activity log
    ========================================================================== */
 
@@ -51,6 +52,21 @@ const KINDS = {
 /* ---------- entry point ---------- */
 
 export async function handleAdmin(request, env) {
+  const allowed = allowedOrigins(request, env);
+  const origin = request.headers.get('Origin');
+  /* only the dashboard's own site may read the answers (a browser enforces this) */
+  const cors = origin && allowed.includes(origin) ? {
+    'Access-Control-Allow-Origin': origin, Vary: 'Origin',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Druk-Admin',
+    'Access-Control-Max-Age': '600',
+  } : {};
+  const response = request.method === 'OPTIONS' ? new Response(null, { status: 204 }) : await answer(request, env);
+  Object.keys(cors).forEach((key) => response.headers.set(key, cors[key]));
+  return response;
+}
+
+async function answer(request, env) {
   try {
     const url = new URL(request.url);
     const route = url.pathname.replace(/^\/admin\/api/, '').replace(/\/+$/, '') || '/';
@@ -61,7 +77,7 @@ export async function handleAdmin(request, env) {
     if (method !== 'GET' && method !== 'POST' && method !== 'PUT') throw fail(405, 'Method not allowed');
 
     if (route === '/login' && method === 'POST') return await login(request, env);
-    if (route === '/logout' && method === 'POST') return reply(200, { ok: true }, { 'Set-Cookie': cookie('', 0) });
+    if (route === '/logout' && method === 'POST') return reply(200, { ok: true });
 
     /* everything else: who is this? (fails closed: unconfigured or unsigned means no) */
     const who = await authenticate(request, env);
@@ -90,7 +106,6 @@ export async function handleAdmin(request, env) {
 
 /* ---------- sign-in: password in, signed 12-hour cookie out ---------- */
 
-const COOKIE = 'druk_admin';
 const SESSION_SECONDS = 12 * 60 * 60;
 
 function configured(env) {
@@ -108,10 +123,6 @@ async function sessionKey(env) {
   return crypto.subtle.importKey('raw', await sha256('druk-admin-session:' + env.ADMIN_PASSWORD), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
 }
 
-function cookie(value, seconds) {
-  return COOKIE + '=' + value + '; Path=/admin; Max-Age=' + seconds + '; HttpOnly; Secure; SameSite=Strict';
-}
-
 async function login(request, env) {
   configured(env);
   const body = await readJson(request);
@@ -123,15 +134,16 @@ async function login(request, env) {
     await new Promise((resolve) => setTimeout(resolve, 1500));        /* slows guessing */
     throw fail(401, 'That password is not right.', 'bad_password');
   }
-  const expires = String(Date.now() + SESSION_SECONDS * 1000);
-  const mac = await crypto.subtle.sign('HMAC', await sessionKey(env), new TextEncoder().encode(expires));
-  return reply(200, { ok: true }, { 'Set-Cookie': cookie(expires + '.' + toB64url(new Uint8Array(mac)), SESSION_SECONDS) });
+  /* the token is an expiry time plus its signature; the page sends it as "Authorization: Bearer …" */
+  const expires = Date.now() + SESSION_SECONDS * 1000;
+  const mac = await crypto.subtle.sign('HMAC', await sessionKey(env), new TextEncoder().encode(String(expires)));
+  return reply(200, { ok: true, token: expires + '.' + toB64url(new Uint8Array(mac)), expires });
 }
 
 async function authenticate(request, env) {
   configured(env);
-  const match = /(?:^|;\s*)druk_admin=([^;]+)/.exec(request.headers.get('Cookie') || '');
-  const [expires, mac] = match ? match[1].split('.') : [];
+  const header = /^Bearer ([^ ]+)$/.exec(request.headers.get('Authorization') || '');
+  const [expires, mac] = header ? header[1].split('.') : [];
   let good = false;
   try {
     good = !!expires && /^\d+$/.test(expires) && Number(expires) > Date.now()
@@ -141,15 +153,17 @@ async function authenticate(request, env) {
   return { email: 'editor' };
 }
 
+function allowedOrigins(request, env) {
+  const extra = String(env.ADMIN_ORIGIN || '').split(',').map((o) => o.trim().replace(/\/+$/, '')).filter(Boolean);
+  return [new URL(request.url).origin, String(env.SITE_ORIGIN || core.SITE_ORIGIN).replace(/\/+$/, '')].concat(extra);
+}
+
+/* changes need the dashboard's own header (which forces a browser permission check
+   a stranger's website cannot pass) and, when a browser names its origin, the right one */
 function guardAgainstCrossSite(request, env) {
-  const site = request.headers.get('Sec-Fetch-Site');
-  if (site && site !== 'same-origin') throw fail(403, 'Request refused.', 'cross_site');
   if (request.headers.get('X-Druk-Admin') !== '1') throw fail(403, 'Request refused.', 'cross_site');
   const origin = request.headers.get('Origin');
-  if (origin) {
-    const allowed = [new URL(request.url).origin].concat(String(env.ADMIN_ORIGIN || '').split(',').map((o) => o.trim()).filter(Boolean).map((o) => o.replace(/\/+$/, '')));
-    if (!allowed.includes(origin)) throw fail(403, 'Request refused.', 'cross_site');
-  }
+  if (origin && !allowedOrigins(request, env).includes(origin)) throw fail(403, 'Request refused.', 'cross_site');
 }
 
 /* ---------- reading ---------- */

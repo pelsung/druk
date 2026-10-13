@@ -22,13 +22,13 @@ async function rawLogin(password, env = ENV) {
 let session;
 async function signedIn(env = ENV) {
   const res = await rawLogin(PASSWORD, env);
-  return /druk_admin=[^;]+/.exec(res.headers.get('Set-Cookie'))[0];
+  return 'Bearer ' + (await res.json()).token;
 }
 
 async function api(method, path, { body, token, env = ENV, headers = {}, raw } = {}) {
   const cookie = token === undefined ? (session ||= await signedIn(env)) : token;
   const h = { ...(method === 'GET' ? {} : post), ...headers };
-  if (cookie) h.Cookie = cookie;
+  if (cookie) h.Authorization = cookie;
   const response = await worker.fetch(new Request(SITE + '/admin/api' + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined }), env);
   const text = await response.text();
   return { status: response.status, body: raw ? text : (text ? JSON.parse(text) : null) };
@@ -48,25 +48,24 @@ test('the right password signs in; a wrong one does not', async () => {
 
   const good = await rawLogin(PASSWORD);
   assert.equal(good.status, 200);
-  const header = good.headers.get('Set-Cookie');
-  assert.match(header, /HttpOnly/);
-  assert.match(header, /Secure/);
-  assert.match(header, /SameSite=Strict/);
-  assert.match(header, /Max-Age=43200/);
-  assert.doesNotMatch(header, new RegExp(PASSWORD));
+  const body = await good.json();
+  assert.match(body.token, /^[0-9]+[.][A-Za-z0-9_-]+$/);
+  assert.ok(body.expires - Date.now() > 11.9 * 3600 * 1000 && body.expires - Date.now() <= 12 * 3600 * 1000, 'lasts 12 hours');
+  assert.equal(good.headers.get('Set-Cookie'), null, 'no cookie is used');
+  assert.doesNotMatch(JSON.stringify(body), new RegExp(PASSWORD));
 });
 
-test('without a valid session cookie nothing is returned and GitHub is never touched', async () => {
+test('without a valid sign-in token nothing is returned and GitHub is never touched', async () => {
   const good = await signedIn();
-  const [name, value] = good.split('=');
-  const [expires, mac] = value.split('.');
-  const other = await (async () => { const r = await rawLogin('a completely different one', { ...ENV, ADMIN_PASSWORD: 'a completely different one' }); return /druk_admin=[^;]+/.exec(r.headers.get('Set-Cookie'))[0]; })();
+  const [expires, mac] = good.slice(7).split('.');
+  const other = await signedIn({ ...ENV, ADMIN_PASSWORD: 'a completely different one' });
   for (const [label, cookie] of [
-    ['no cookie', null],
-    ['garbage', 'druk_admin=abc'],
-    ['empty', 'druk_admin='],
-    ['expired', 'druk_admin=' + (Date.now() - 1000) + '.' + mac],
-    ['extended expiry (forged)', 'druk_admin=' + (Number(expires) + 99999999) + '.' + mac],
+    ['no token', null],
+    ['garbage', 'Bearer abc'],
+    ['empty', 'Bearer '],
+    ['not a bearer token', 'Basic abc'],
+    ['expired', 'Bearer ' + (Date.now() - 1000) + '.' + mac],
+    ['extended expiry (forged)', 'Bearer ' + (Number(expires) + 99999999) + '.' + mac],
     ['signed with another password', other],
   ]) {
     const res = await api('GET', '/content', { token: cookie });
@@ -80,21 +79,33 @@ test('without a valid session cookie nothing is returned and GitHub is never tou
 test('the dashboard refuses to run without a strong password set', async () => {
   for (const env of [{ ...ENV, ADMIN_PASSWORD: '' }, { ...ENV, ADMIN_PASSWORD: 'short' }, { ...ENV, ADMIN_PASSWORD: undefined }]) {
     assert.equal((await rawLogin('short', env)).status, 503);
-    assert.equal((await api('GET', '/content', { env, token: 'druk_admin=1.2' })).status, 503);
+    assert.equal((await api('GET', '/content', { env, token: 'Bearer 1.2' })).status, 503);
   }
 });
 
-test('signed in, the editor can open the dashboard; logging out clears the cookie', async () => {
+test('signed in, the editor can open the dashboard', async () => {
   assert.equal((await api('GET', '/me')).status, 200);
-  const out = await worker.fetch(new Request(SITE + '/admin/api/logout', { method: 'POST', headers: post }), ENV);
-  assert.match(out.headers.get('Set-Cookie'), /Max-Age=0/);
+});
+
+test('only the site itself may use the API from a browser', async () => {
+  const token = await signedIn();
+  const ask = (origin, method = 'GET') => worker.fetch(new Request(SITE + '/admin/api/me', { method, headers: { Origin: origin, Authorization: token, 'Access-Control-Request-Method': 'GET' } }), ENV);
+  const ok = await ask(SITE);
+  assert.equal(ok.headers.get('Access-Control-Allow-Origin'), SITE);
+  assert.equal((await ask('https://evil.example')).headers.get('Access-Control-Allow-Origin'), null, 'another site gets no permission');
+  const pre = await ask(SITE, 'OPTIONS');
+  assert.equal(pre.status, 204);
+  assert.match(pre.headers.get('Access-Control-Allow-Headers'), /Authorization/);
+  assert.equal((await ask('https://evil.example', 'OPTIONS')).headers.get('Access-Control-Allow-Origin'), null);
+  /* even holding a valid token, a request that names another site as its origin is refused */
+  const forged = await worker.fetch(new Request(SITE + '/admin/api/item/status', { method: 'POST', headers: { ...post, Origin: 'https://evil.example', Authorization: token }, body: '{}' }), ENV);
+  assert.equal(forged.status, 403);
 });
 
 test('changes must come from the dashboard, not another site', async () => {
   const base = { kind: 'journal', id: 'the-beginning', sha: 'x' };
   assert.equal((await api('POST', '/item/status', { body: { ...base, status: 'draft' }, headers: { 'X-Druk-Admin': '' } })).status, 403);
   assert.equal((await api('POST', '/item/status', { body: { ...base, status: 'draft' }, headers: { Origin: 'https://evil.example' } })).status, 403);
-  assert.equal((await api('POST', '/item/status', { body: { ...base, status: 'draft' }, headers: { 'Sec-Fetch-Site': 'cross-site' } })).status, 403);
   assert.equal((await worker.fetch(new Request(SITE + '/admin/api/login', { method: 'POST', headers: { ...post, Origin: 'https://evil.example' }, body: JSON.stringify({ password: PASSWORD }) }), ENV)).status, 403, 'login from another site');
   assert.equal(fake.state.calls.filter((c) => c.startsWith('POST') || c.startsWith('PATCH')).length, 0);
 });

@@ -9,7 +9,7 @@ visitors send in — without opening GitHub.
  ────────────────                         ┌──────────────────────────────────────┐
   /admin/ (this folder, static)           │ druk-studio Worker (studio-api/)     │
         │  password → POST /admin/api/login│ · checks the password (a secret)     │
-        │  ◀── signed cookie, 12 hours     │ · checks the cookie on every request │
+        │  ◀── signed token, 12 hours      │ · checks the token on every request │
         │  fetch /admin/api/…  (same site) │ · builds file paths itself           │
         └────────────────────────────────▶ │ · holds GITHUB_TOKEN (a secret)      │
                                            └──────────────┬───────────────────────┘
@@ -67,9 +67,9 @@ the only thing protecting the dashboard, so don't reuse one from elsewhere.
 
 ### 3. The Worker
 
-Uncomment the `routes` line in `studio-api/wrangler.toml` (it is set to `druk.help`;
-use your own domain). This makes the dashboard's API answer on the same address as the
-dashboard, which the sign-in cookie needs. Then, from `studio-api/`:
+The dashboard page lives on `druk.help/admin/`; it talks to the Worker at its own address
+(`https://druk-studio.studio-api.workers.dev/admin/api`, set in the `admin-api` meta tag of
+`admin/index.html`). From `studio-api/`:
 
 ```bash
 npx wrangler secret put ADMIN_PASSWORD --config wrangler.toml     # type the password when asked
@@ -77,7 +77,8 @@ npx wrangler deploy --config wrangler.toml
 ```
 
 Always pass `--config wrangler.toml` (see `studio-api/README.md`). Never put the
-password in a file or in chat.
+password in a file or in chat. `SITE_ORIGIN` in `wrangler.toml` (`https://druk.help`) is the
+only website a browser lets use the API.
 
 Optional, recommended: an **activity log** that also records failed attempts:
 
@@ -97,16 +98,17 @@ Merge this branch to `main`. `admin/` is static and goes out with the site.
 ### 5. Check it
 
 Open `https://druk.help/admin/`: you should see a password box, and nothing else.
-Visiting `https://druk.help/admin/api/content` without signing in must answer `401`.
+Visiting `https://druk-studio.studio-api.workers.dev/admin/api/content` without signing in must answer `401`.
 Then sign in, make a harmless edit and watch the progress card reach **Live**.
 
 ## How sign-in works
 
-The Worker trades the password for a cookie that holds an expiry time signed with a key
-derived from the password. It lasts 12 hours (then the password box returns), is
-`HttpOnly`, `Secure` and `SameSite=Strict`, and is checked on **every** request. A wrong
-password is answered after a 1.5 s delay. **Changing the password signs everyone out.**
-The Activity log shows "editor" — everyone shares one login.
+The Worker trades the password for a token: an expiry time signed with a key derived from
+the password. The page keeps it in this browser, sends it as `Authorization: Bearer …`, and
+the Worker checks it on **every** request. It lasts 12 hours (then the password box returns).
+A wrong password is answered after a 1.5 s delay. **Changing the password signs everyone out.**
+Browsers only let `SITE_ORIGIN` read the API's answers, and changes also need the dashboard's own
+header. The Activity log shows "editor" — everyone shares one login.
 
 ## Changing the password or giving access
 
