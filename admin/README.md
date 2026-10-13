@@ -92,8 +92,9 @@ Without it, *Activity* is built from the repository's commit history (successful
 ### 4. Publish the dashboard files
 
 Merge this branch to `main`. `admin/` is static and goes out with the site.
-`.assetsignore` keeps `content/**/*.md` (unpublished text!), `studio-api/` and
-`.github/` from being served.
+`_config.yml` (GitHub Pages) and `.assetsignore` (Cloudflare) keep `content/**/*.md`
+(unpublished text!), `studio-api/` and `.github/` from being served. Check once, after an
+unpublish, that `https://druk.help/content/stories/<name>.md` gives a 404.
 
 ### 5. Check it
 

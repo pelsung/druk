@@ -1,0 +1,7 @@
+# GitHub Pages builds the site with Jekyll. These files stay in the repository but are
+# not published, so an unpublished (draft) story or journal entry is really not public.
+exclude:
+  - content/journal/*.md
+  - content/stories/*.md
+  - studio-api
+  - .github
