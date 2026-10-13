@@ -41,6 +41,15 @@ numbered.
 "Read more", "Read story" and every card open the article's own page, with a
 link back to the journal or to all stories at the bottom.
 
+## Managed from the editor dashboard
+
+The editor does not need GitHub: **`/admin/`** (private, behind Cloudflare Access) lists
+every story and journal entry, edits them in a visual editor with a preview, publishes,
+unpublishes and deletes them, and approves or declines what visitors send in. It writes
+the same Markdown files as everything above, one commit per action, and the same GitHub
+Action rebuilds the pages. An unpublished piece has `status: "draft"` in its header.
+Setup, access and limits: `admin/README.md`.
+
 ## Sent from the site
 
 A journal entry or story sent from `/stories/share.html` becomes a pull request

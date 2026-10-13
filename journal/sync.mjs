@@ -19,7 +19,7 @@
    and the share endpoint (studio-api/) use the same logic, in sync-core.js.
    ========================================================================== */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, unlinkSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import './sync-core.js';
@@ -124,13 +124,14 @@ const SHARED = {
 export function publishMarkdown(kind, items) {
   const conf = SHARED[kind];
   const sourceDir = join(CONTENT_DIR, conf.from);
-  if (!existsSync(sourceDir)) return { items, count: 0 };
+  if (!existsSync(sourceDir)) return { items, count: 0, unpublished: 0 };
   const templatePath = join(conf.pages(), '_template.html');
   if (!existsSync(templatePath)) fail(conf.folder + '/_template.html is missing.');
   const template = readFileSync(templatePath, 'utf8');
 
   let list = items.slice();
   let count = 0;
+  let unpublished = 0;
   for (const file of readdirSync(sourceDir).sort()) {
     if (!file.endsWith('.md') || file.startsWith('_') || file.toLowerCase() === 'readme.md') continue;
     const where = `content/${conf.from}/${file}`;
@@ -143,6 +144,16 @@ export function publishMarkdown(kind, items) {
       continue;
     }
     const { meta, body } = parsed;
+
+    /* "status: draft" is how the admin dashboard unpublishes: the Markdown stays
+       in the repository, but its page and its line in the list are taken away */
+    if (String(meta.status || '').toLowerCase() === 'draft') {
+      const draftPage = join(conf.pages(), slug + '.html');
+      if (existsSync(draftPage)) unlinkSync(draftPage);
+      list = list.filter((item) => item.slug !== slug);
+      unpublished++;
+      continue;
+    }
     if (!meta.title || !body) {
       console.warn(`  (skipped ${where} — it needs a title and some text)`);
       continue;
@@ -171,7 +182,7 @@ export function publishMarkdown(kind, items) {
     list = [item, ...list.filter((s) => s.slug !== slug)];
     count++;
   }
-  return { items: core.sortEntries(list), count };
+  return { items: core.sortEntries(list), count, unpublished };
 }
 
 /* ---------- run directly ---------- */
@@ -194,6 +205,7 @@ if (invokedDirectly) {
   console.log(`
   Synced ${entries.length} journal entries, ${stories.length} stories, ${site.tagline.length}-part tagline
     shared         ${sharedEntries.count} from content/journal/*.md, ${sharedStories.count} from content/stories/*.md
+    unpublished    ${sharedEntries.unpublished + sharedStories.unpublished} draft(s) kept out of the site
     sitemap.xml    ${urls} URLs
     index.html     ${cards} journal cards, ${Math.min(stories.length, core.HOME_CARDS)} story cards, tagline and footer line
 `);

@@ -59,6 +59,13 @@ After a merge, the GitHub Action turns the file into `journal/<slug>.html`,
 adds it to `journal/entries.js`, the Journal page, the front page's
 **From the journal** cards and the sitemap, and commits that.
 
-To take one down, delete its `.md` file here, its photo and its entry in
-`journal/entries.js`, delete `journal/<slug>.html`, then run
-`node journal/sync.mjs`.
+### Taking an entry down
+
+The easiest way is the editor dashboard (`/admin/`, see `../../admin/README.md`):
+**Unpublish** hides it and keeps it, **Delete** removes it for good.
+
+By hand: add `status: "draft"` to the header and run `node journal/sync.mjs` (or just
+merge — the Action runs it). The entry's page and its line in `journal/entries.js`
+are removed; the file stays here, and deleting that line publishes it again.
+To delete it completely, remove its `.md` file, its photo, its entry in
+`journal/entries.js` and `journal/<slug>.html`, then run `node journal/sync.mjs`.

@@ -1,0 +1,13 @@
+# Files that are in the repository but must not be served as part of the website.
+# Wrangler reads this when it uploads the site's static assets.
+
+# Draft (unpublished) stories and journals keep their Markdown in the repository;
+# unpublishing would mean nothing if the text stayed downloadable.
+content/**/*.md
+
+# Not website files
+.git
+.github
+.wrangler
+.assetsignore
+studio-api

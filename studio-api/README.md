@@ -9,6 +9,13 @@ reaches a browser, and it does one thing: turn each submission into a
 It never writes to the live branch. Nothing is published until someone on the
 team merges the pull request — see `content/stories/README.md` for reviewing.
 
+## The editor dashboard
+
+This Worker also answers `/admin/api/*` for the editor dashboard (`../admin/`), in
+`admin.js`. Those routes are separate from `POST /submit`, need a Cloudflare Access
+login, and are described — with setup — in `../admin/README.md`. The GitHub token needs
+two more read permissions for it (**Actions** and **Checks**).
+
 ## Trying it without GitHub
 
 ```bash

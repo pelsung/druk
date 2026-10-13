@@ -420,7 +420,7 @@
 
   /* offered as suggestions; a writer can type any topic */
   var SUGGESTED_TOPICS = ['Health & Wellbeing', 'Caregiving', 'Disability', 'Palliative Care'];
-  var STORY_FIELDS = ['title', 'author', 'category', 'date', 'excerpt', 'image', 'imageAlt', 'caption'];
+  var STORY_FIELDS = ['title', 'author', 'category', 'date', 'excerpt', 'image', 'imageAlt', 'caption', 'status'];
 
   var REFLECTION = [
     { key: 'why', question: 'Why did we come for the meeting?' },

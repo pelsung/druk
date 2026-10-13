@@ -18,6 +18,7 @@
    ========================================================================== */
 
 import '../journal/sync-core.js';
+import { handleAdmin } from './admin.js';
 
 const core = globalThis.DrukJournal;
 
@@ -40,6 +41,9 @@ export default {
       status,
       headers: { ...cors, 'Content-Type': 'application/json' },
     });
+
+    /* the editorial dashboard's API: its own authentication, no CORS (same origin only) */
+    if (new URL(request.url).pathname.startsWith('/admin/api/')) return handleAdmin(request, env);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     if (request.method !== 'POST') return reply(405, { error: 'Method not allowed' });

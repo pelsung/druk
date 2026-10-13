@@ -2,6 +2,10 @@ name = "druk-studio"
 main = "worker.js"
 compatibility_date = "2026-09-01"
 
+# The editor dashboard's API must answer on the same address as the dashboard, so
+# the site's own domain needs this route (keep it above [vars]; see admin/README.md):
+# routes = [{ pattern = "druk.help/admin/api/*", zone_name = "druk.help" }]
+
 [vars]
 REPO = "pelsung/druk"
 BRANCH = "main"
@@ -11,3 +15,23 @@ ALLOWED_ORIGIN = "*"   # set to the site's origin, e.g. "https://druk.help"
 # --config (the druk/ folder's own wrangler.jsonc would be picked otherwise):
 #   npx wrangler secret put GITHUB_TOKEN --config wrangler.toml
 #   npx wrangler secret put TURNSTILE_SECRET --config wrangler.toml   (optional, see README.md)
+
+# ---- Editor dashboard (/admin/) ---------------------------------------------
+# Cloudflare Access protects it; the Worker checks Access's signed token itself.
+# Both values are in Zero Trust → Access → Applications (see admin/README.md).
+# Left empty, the dashboard refuses every request (it fails closed).
+ACCESS_TEAM_DOMAIN = ""          # e.g. "druk.cloudflareaccess.com"
+ACCESS_AUD = ""                  # the Access application's "Audience (AUD) tag"
+SITE_ORIGIN = "https://druk.help"   # where "is it live yet?" looks
+
+# Who may use the dashboard are SECRETS, not vars, so addresses stay out of git:
+#   npx wrangler secret put EDITOR_EMAILS --config wrangler.toml   (a,b,c — comma-separated)
+#   npx wrangler secret put ADMIN_EMAILS  --config wrangler.toml   (optional: only these may delete)
+
+# Optional: record an activity log (also lists failed attempts). Create it with
+#   npx wrangler kv namespace create AUDIT
+# and uncomment:
+# [[kv_namespaces]]
+# binding = "AUDIT"
+# id = "<the id printed by that command>"
+

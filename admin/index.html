@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editor dashboard — Druk.help</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#22170F">
+<!-- where the dashboard talks to: the same site, behind Cloudflare Access (see studio-api/README.md) -->
+<meta name="admin-api" content="/admin/api">
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Albert+Sans:wght@400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell" id="shell">
+  <aside class="side" id="side">
+    <a class="brand" href="#/">
+      <span class="flagmark" aria-hidden="true"></span>
+      <span class="wordmark">Druk<span>.</span>help</span>
+      <span class="brand-tag">Editor</span>
+    </a>
+    <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Dashboard">
+      <a href="#/" data-route="home">Dashboard</a>
+      <a href="#/stories" data-route="stories">All stories</a>
+      <a href="#/journals" data-route="journals">All journals</a>
+      <a href="#/pending" data-route="pending">Waiting for review <span class="badge" id="pending-badge" hidden></span></a>
+      <a href="#/published" data-route="published">Published</a>
+      <a href="#/drafts" data-route="drafts">Unpublished</a>
+      <a href="#/activity" data-route="activity">Activity</a>
+      <a href="../index.html" target="_blank" rel="noopener" class="nav-aside">View the website ↗</a>
+      <a href="/cdn-cgi/access/logout" class="nav-aside" id="logout">Log out</a>
+    </nav>
+    <p class="who" id="who"></p>
+  </aside>
+
+  <main class="main" id="main" tabindex="-1">
+    <noscript><p class="notice notice-bad">The dashboard needs JavaScript to run.</p></noscript>
+    <div id="view" aria-live="polite"></div>
+  </main>
+</div>
+
+<!-- what is happening to the changes just made -->
+<section class="tracker" id="tracker" aria-label="Publishing progress" hidden></section>
+
+<dialog class="modal" id="modal"></dialog>
+
+<script src="../journal/sync-core.js"></script>
+<script src="editor.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

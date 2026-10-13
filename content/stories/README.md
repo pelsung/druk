@@ -42,6 +42,13 @@ Submitted text is rendered in safe mode: basic formatting (`**bold**`, lists,
 `> quotes`, `## headings`) works, but raw HTML and images inside the text do
 not.
 
-To take a published story down, delete its `.md` file here and its entry in
-`content/stories.js`, delete `stories/<slug>.html`, then run
-`node journal/sync.mjs`.
+### Taking a story down
+
+The easiest way is the editor dashboard (`/admin/`, see `../../admin/README.md`):
+**Unpublish** hides it and keeps it, **Delete** removes it for good.
+
+By hand: add `status: "draft"` to the header and run `node journal/sync.mjs` (or just
+merge — the Action runs it). The story's page and its line in `content/stories.js`
+are removed; the file stays here so it can be published again by deleting that line.
+To delete it completely, remove its `.md` file, its photo, its line in
+`content/stories.js` and `stories/<slug>.html`, then run `node journal/sync.mjs`.
