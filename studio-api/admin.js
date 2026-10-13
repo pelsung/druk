@@ -5,9 +5,10 @@
    kept apart from the public POST /submit endpoint in worker.js, and every
    request here is checked on its own:
 
-     1. Cloudflare Access must have signed the request (Cf-Access-Jwt-Assertion).
-        The signature, issuer, audience and expiry are verified here — the
-        email header is never trusted — and the email must be on the editor list.
+     1. A signed session cookie, given by POST /login in exchange for the editor
+        password (secret ADMIN_PASSWORD). The cookie is an expiry time signed with
+        a key derived from the password, lasts 12 hours, and is HttpOnly,
+        Secure and SameSite=Strict. Anything without a valid one gets 401.
      2. Changes (anything but GET) must come from the dashboard itself: a custom
         header and a same-origin request, which a page on another site cannot send.
      3. The browser never names a file. It names a kind ("journal" | "story") and
@@ -19,16 +20,12 @@
    file changed since the editor opened it. The existing GitHub Action then
    rebuilds the pages; /deploy reports whether that and the site deploy finished.
 
-   Config (wrangler.toml and secrets — see studio-api/README.md):
-     GITHUB_TOKEN        secret; contents + pull requests (+ actions) on this repo
-     ACCESS_TEAM_DOMAIN  e.g. myteam.cloudflareaccess.com
-     ACCESS_AUD          the Access application's Audience (AUD) tag
-     EDITOR_EMAILS       comma-separated emails allowed to manage content
-     ADMIN_EMAILS        optional; when set, only these may delete permanently
+   Config (wrangler.toml and secrets — see admin/README.md):
+     GITHUB_TOKEN        secret; contents + pull requests + actions on this repo
+     ADMIN_PASSWORD      secret; the editor's password, at least 12 characters
      ADMIN_ORIGIN        optional extra allowed Origin (the site's own is always allowed)
      SITE_ORIGIN         the public site, for checking what is live (default https://druk.help)
      AUDIT               optional KV namespace for the activity log
-     HIDE_EDITOR_EMAIL   "1" to record a short code instead of the email in commits
    ========================================================================== */
 
 import '../journal/sync-core.js';
@@ -59,17 +56,20 @@ export async function handleAdmin(request, env) {
     const route = url.pathname.replace(/^\/admin\/api/, '').replace(/\/+$/, '') || '/';
     const method = request.method;
 
-    /* 1. who is this? (fails closed: unconfigured or unsigned means no) */
-    const who = await authenticate(request, env);
-
-    /* 2. a change must come from the dashboard, not from another website */
+    /* a change must come from the dashboard, not from another website */
     if (method !== 'GET') guardAgainstCrossSite(request, env);
     if (method !== 'GET' && method !== 'POST' && method !== 'PUT') throw fail(405, 'Method not allowed');
+
+    if (route === '/login' && method === 'POST') return await login(request, env);
+    if (route === '/logout' && method === 'POST') return reply(200, { ok: true }, { 'Set-Cookie': cookie('', 0) });
+
+    /* everything else: who is this? (fails closed: unconfigured or unsigned means no) */
+    const who = await authenticate(request, env);
 
     const gh = github(env);
     const ctx = { env, gh, who, url, request };
 
-    if (route === '/me' && method === 'GET') return reply(200, { email: who.email, canDelete: canDelete(who.email, env) });
+    if (route === '/me' && method === 'GET') return reply(200, { canDelete: true });
     if (route === '/content' && method === 'GET') return reply(200, await listContent(ctx));
     if (route === '/item' && method === 'GET') return reply(200, await readItem(ctx));
     if (route === '/item' && method === 'PUT') return reply(200, await saveItem(ctx, await readJson(request)));
@@ -88,74 +88,57 @@ export async function handleAdmin(request, env) {
   }
 }
 
-/* ---------- authentication and authorisation ---------- */
+/* ---------- sign-in: password in, signed 12-hour cookie out ---------- */
 
-const keyCache = { at: 0, keys: [] };
+const COOKIE = 'druk_admin';
+const SESSION_SECONDS = 12 * 60 * 60;
 
-/* for tests, which swap the signing key between runs */
-export function resetAccessKeys() { keyCache.at = 0; keyCache.keys = []; }
+function configured(env) {
+  if (!env.GITHUB_TOKEN || !env.REPO || String(env.ADMIN_PASSWORD || '').length < 12) {
+    throw fail(503, 'The dashboard has not been set up yet. See admin/README.md.', 'not_configured');
+  }
+}
+
+async function sha256(text) {
+  return new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
+}
+
+/* the signing key comes from the password, so changing the password signs everyone out */
+async function sessionKey(env) {
+  return crypto.subtle.importKey('raw', await sha256('druk-admin-session:' + env.ADMIN_PASSWORD), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+}
+
+function cookie(value, seconds) {
+  return COOKIE + '=' + value + '; Path=/admin; Max-Age=' + seconds + '; HttpOnly; Secure; SameSite=Strict';
+}
+
+async function login(request, env) {
+  configured(env);
+  const body = await readJson(request);
+  const typed = await sha256(String(body.password || ''));
+  const real = await sha256(env.ADMIN_PASSWORD);
+  let diff = 0;
+  for (let i = 0; i < real.length; i++) diff |= typed[i] ^ real[i];   /* constant time */
+  if (diff !== 0 || !body.password) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));        /* slows guessing */
+    throw fail(401, 'That password is not right.', 'bad_password');
+  }
+  const expires = String(Date.now() + SESSION_SECONDS * 1000);
+  const mac = await crypto.subtle.sign('HMAC', await sessionKey(env), new TextEncoder().encode(expires));
+  return reply(200, { ok: true }, { 'Set-Cookie': cookie(expires + '.' + toB64url(new Uint8Array(mac)), SESSION_SECONDS) });
+}
 
 async function authenticate(request, env) {
-  /* only for the offline demo (studio-api/admin-dev.mjs), never in production */
-  const host = new URL(request.url).hostname;
-  if (env.LOCAL_DEV === '1' && (host === 'localhost' || host === '127.0.0.1') && env.DEV_AUTH_EMAIL) {
-    return { email: String(env.DEV_AUTH_EMAIL).toLowerCase() };
-  }
-
-  const team = String(env.ACCESS_TEAM_DOMAIN || '').replace(/^https?:\/\//, '').replace(/\/+$/, '');
-  const editors = emailList(env.EDITOR_EMAILS);
-  if (!team || !env.ACCESS_AUD || !editors.length) {
-    throw fail(503, 'The dashboard has not been set up yet. See studio-api/README.md.', 'not_configured');
-  }
-
-  const token = request.headers.get('Cf-Access-Jwt-Assertion');
-  if (!token) throw fail(401, 'Please sign in.', 'unauthenticated');
-  let claims;
-  try { claims = await verifyJwt(token, team, env.ACCESS_AUD); } catch { throw fail(401, 'Your sign-in could not be verified. Please sign in again.', 'unauthenticated'); }
-  const email = String(claims.email || '').toLowerCase();
-  if (!email || !editors.concat(emailList(env.ADMIN_EMAILS)).includes(email)) {
-    throw fail(403, 'This account is not allowed to manage the site.', 'forbidden');
-  }
-  return { email };
-}
-
-async function verifyJwt(token, team, aud) {
-  const parts = token.split('.');
-  if (parts.length !== 3) throw new Error('shape');
-  const header = JSON.parse(utf8(b64urlBytes(parts[0])));
-  if (header.alg !== 'RS256' || !header.kid) throw new Error('alg');
-
-  let jwk = (await accessKeys(team, false)).find((k) => k.kid === header.kid);
-  if (!jwk) jwk = (await accessKeys(team, true)).find((k) => k.kid === header.kid);
-  if (!jwk) throw new Error('kid');
-
-  const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
-  const good = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64urlBytes(parts[2]), new TextEncoder().encode(parts[0] + '.' + parts[1]));
-  if (!good) throw new Error('signature');
-
-  const claims = JSON.parse(utf8(b64urlBytes(parts[1])));
-  const now = Math.floor(Date.now() / 1000);
-  const audience = [].concat(claims.aud || []);
-  if (claims.iss !== 'https://' + team) throw new Error('iss');
-  if (!audience.includes(aud)) throw new Error('aud');
-  if (!claims.exp || claims.exp < now - 30) throw new Error('exp');
-  if (claims.nbf && claims.nbf > now + 30) throw new Error('nbf');
-  return claims;
-}
-
-async function accessKeys(team, force) {
-  if (!force && keyCache.keys.length && Date.now() - keyCache.at < 3600000) return keyCache.keys;
-  if (force && Date.now() - keyCache.at < 60000 && keyCache.keys.length) return keyCache.keys;   /* don't hammer */
-  const response = await fetch('https://' + team + '/cdn-cgi/access/certs');
-  if (!response.ok) throw new Error('certs');
-  keyCache.keys = (await response.json()).keys || [];
-  keyCache.at = Date.now();
-  return keyCache.keys;
-}
-
-function canDelete(email, env) {
-  const admins = emailList(env.ADMIN_EMAILS);
-  return !admins.length || admins.includes(email);
+  configured(env);
+  const match = /(?:^|;\s*)druk_admin=([^;]+)/.exec(request.headers.get('Cookie') || '');
+  const [expires, mac] = match ? match[1].split('.') : [];
+  let good = false;
+  try {
+    good = !!expires && /^\d+$/.test(expires) && Number(expires) > Date.now()
+      && await crypto.subtle.verify('HMAC', await sessionKey(env), b64urlBytes(mac), new TextEncoder().encode(expires));
+  } catch { good = false; }
+  if (!good) throw fail(401, 'Please sign in.', 'unauthenticated');
+  return { email: 'editor' };
 }
 
 function guardAgainstCrossSite(request, env) {
@@ -164,7 +147,7 @@ function guardAgainstCrossSite(request, env) {
   if (request.headers.get('X-Druk-Admin') !== '1') throw fail(403, 'Request refused.', 'cross_site');
   const origin = request.headers.get('Origin');
   if (origin) {
-    const allowed = [new URL(request.url).origin].concat(emailList(env.ADMIN_ORIGIN).map((o) => o.replace(/\/+$/, '')));
+    const allowed = [new URL(request.url).origin].concat(String(env.ADMIN_ORIGIN || '').split(',').map((o) => o.trim()).filter(Boolean).map((o) => o.replace(/\/+$/, '')));
     if (!allowed.includes(origin)) throw fail(403, 'Request refused.', 'cross_site');
   }
 }
@@ -299,7 +282,6 @@ async function setStatus(ctx, input) {
 
 async function deleteItem(ctx, input) {
   const { env, who } = ctx;
-  if (!canDelete(who.email, env)) throw fail(403, 'Only an administrator can delete permanently. You can unpublish instead.', 'forbidden');
   const target = target_(input.kind, input.id);
   if (!input.sha) throw fail(400, 'Missing version of the file.');
   const slug = core.slugify(target.id);
@@ -668,10 +650,8 @@ async function readAudit(ctx) {
   };
 }
 
-async function editorLabel(email, env) {
-  if (env.HIDE_EDITOR_EMAIL !== '1') return email;
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email));
-  return 'editor-' + Array.from(new Uint8Array(digest)).slice(0, 4).map((b) => b.toString(16).padStart(2, '0')).join('');
+async function editorLabel() {
+  return 'editor';
 }
 
 /* ---------- GitHub ---------- */
@@ -768,10 +748,6 @@ function pick(object, keys) {
   return out;
 }
 
-function emailList(value) {
-  return String(value || '').split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
-}
-
 async function readJson(request) {
   if (Number(request.headers.get('Content-Length') || 0) > MAX_JSON) throw fail(413, 'That is too large.');
   if (!/application\/json/i.test(request.headers.get('Content-Type') || '')) throw fail(415, 'Bad request');
@@ -785,10 +761,10 @@ function conflict() {
   return fail(409, 'Someone else changed this while you were editing it. Reload it to see their version before saving.', 'conflict');
 }
 
-function reply(status, body) {
+function reply(status, body, extra) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...extra },
   });
 }
 
@@ -803,6 +779,10 @@ function base64Bytes(text) {
 
 function b64urlBytes(text) {
   return base64Bytes(String(text).replace(/-/g, '+').replace(/_/g, '/'));
+}
+
+function toB64url(bytes) {
+  return btoa(String.fromCharCode(...bytes)).split('+').join('-').split('/').join('_').split('=').join('');
 }
 
 function utf8(bytes) {

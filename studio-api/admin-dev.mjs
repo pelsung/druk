@@ -9,7 +9,7 @@
    touches the real repository or website; restart to start fresh.
 
    Saves are slowed on purpose (build after 4 s, publish after 8 s) so you can
-   watch the progress steps. Signing in is skipped — only in this local copy. */
+   watch the progress steps. The demo password is: demo-password-123. */
 
 import { createServer } from 'node:http';
 import { dirname, join, extname } from 'node:path';
@@ -22,11 +22,7 @@ const port = Number(process.env.PORT || 8090);
 const fake = createFakeGitHub({ root });
 fake.install();
 
-const env = {
-  LOCAL_DEV: '1', DEV_AUTH_EMAIL: process.env.DEV_EMAIL || 'editor@example.com',
-  GITHUB_TOKEN: 'local-demo', REPO: 'pelsung/druk', BRANCH: 'main',
-  ADMIN_EMAILS: process.env.DEV_ADMINS || '',
-};
+const env = { GITHUB_TOKEN: 'local-demo', REPO: 'pelsung/druk', BRANCH: 'main', ADMIN_PASSWORD: 'demo-password-123' };
 
 /* something a visitor "sent in", so Waiting for review has an example */
 fake.openSubmission('story', 'a-day-at-the-clinic', [
@@ -42,7 +38,7 @@ createServer(async (req, res) => {
     if (url.pathname.startsWith('/admin/api/')) {
       const chunks = [];
       for await (const c of req) chunks.push(c);
-      const write = req.method !== 'GET';
+      const write = req.method !== 'GET' && !url.pathname.endsWith('/login') && !url.pathname.endsWith('/logout');
       if (write) { fake.state.holdBuild = true; fake.state.holdDeploy = true; }
       const response = await worker.fetch(new Request(url, { method: req.method, headers: req.headers, body: chunks.length ? Buffer.concat(chunks) : undefined }), env);
       if (write && response.status === 200) {
@@ -53,7 +49,6 @@ createServer(async (req, res) => {
       res.end(Buffer.from(await response.arrayBuffer()));
       return;
     }
-    if (url.pathname === '/cdn-cgi/access/logout') { res.writeHead(200, { 'Content-Type': 'text/plain' }); res.end('Logged out (local demo).'); return; }
     let path = decodeURIComponent(url.pathname.replace(/^\//, '')) || 'index.html';
     if (path.endsWith('/')) path += 'index.html';
     const live = fake.snapshot(fake.state.deployed);
@@ -65,4 +60,4 @@ createServer(async (req, res) => {
     console.error(error);
     res.writeHead(500); res.end('error');
   }
-}).listen(port, () => console.log('\n  Editor dashboard (local demo):  http://localhost:' + port + '/admin/\n  Signed in as ' + env.DEV_AUTH_EMAIL + ' — nothing here touches the real site.\n'));
+}).listen(port, () => console.log('\n  Editor dashboard (local demo):  http://localhost:' + port + '/admin/\n  Password: demo-password-123 — nothing here touches the real site.\n'));

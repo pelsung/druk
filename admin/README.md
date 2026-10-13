@@ -5,27 +5,20 @@ delete the site's stories and journal entries — and approve or decline what
 visitors send in — without opening GitHub.
 
 ```
- editor's browser                      Cloudflare                           GitHub
- ────────────────   https://druk.help/admin/   ┌───────────────┐
-  /admin/ (this     ──────────────────────────▶│ Access login  │  only approved emails
-  folder, static)                              └──────┬────────┘
-        │ fetch /admin/api/…  (same address)          │ signed token
-        ▼                                             ▼
-                                         druk-studio Worker (studio-api/)
-                                         · checks the token's signature itself
-                                         · checks the email is on the list
-                                         · builds the file path; never trusts one
-                                         · holds GITHUB_TOKEN (a secret)
-                                                      │ one commit per action
-                                                      ▼
-                                               pelsung/druk  (branch main)
-                                                      │ push
-                                                      ▼
-                                      GitHub Action "Publish shared journal entries
-                                      and stories" (journal/sync.mjs) → rebuilds pages
-                                                      │ push
-                                                      ▼
-                                      Cloudflare builds and deploys the site
+ editor's browser                                     Cloudflare / GitHub
+ ────────────────                         ┌──────────────────────────────────────┐
+  /admin/ (this folder, static)           │ druk-studio Worker (studio-api/)     │
+        │  password → POST /admin/api/login│ · checks the password (a secret)     │
+        │  ◀── signed cookie, 12 hours     │ · checks the cookie on every request │
+        │  fetch /admin/api/…  (same site) │ · builds file paths itself           │
+        └────────────────────────────────▶ │ · holds GITHUB_TOKEN (a secret)      │
+                                           └──────────────┬───────────────────────┘
+                                                          │ one commit per action
+                                                          ▼
+                              pelsung/druk (main) ─push▶ GitHub Action (journal/sync.mjs)
+                                                          │ rebuilds pages, pushes
+                                                          ▼
+                                              Cloudflare builds and deploys the site
 ```
 
 Visitors still submit through `/stories/share.html` → `POST /submit` → a pull
@@ -59,51 +52,32 @@ overwriting.
 ## One-time setup
 
 Nothing here has been done for you — it needs your Cloudflare and GitHub accounts.
-Do the steps in this order so the dashboard is never reachable unprotected.
 
-### 1. GitHub token — add two permissions
+### 1. GitHub token — add one permission
 
-The existing fine-grained token (this repository only) needs, in addition to
-**Contents** and **Pull requests** (read & write):
+The existing fine-grained token (this repository only) needs **Actions: Read-only**
+in addition to **Contents** and **Pull requests** (read & write). GitHub → Settings →
+Developer settings → Fine-grained tokens → the token → edit. The token value does
+not change. Its owner must be allowed to push to `main` directly (the Action already does).
 
-- **Actions: read** — to see whether the rebuild finished.
-- **Checks: read** — to see whether Cloudflare's build of the site succeeded. (Optional;
-  without it the Worker still checks the live site itself.)
+### 2. Choose the editor password
 
-GitHub → Settings → Developer settings → Fine-grained tokens → the token → edit.
-The token value does not change, so nothing needs re-entering. The token's owner
-must be allowed to push to `main` directly (the Action already does).
-
-### 2. Cloudflare Access — who may sign in
-
-Cloudflare dashboard → **Zero Trust** → **Access** → **Applications** → **Add an
-application** → **Self-hosted**.
-
-- Application domain: `druk.help`, path `admin` — and add a second destination
-  `druk.help`, path `admin/*`. (This covers the pages and `admin/api/`.)
-- Policy: **Allow** → *Emails* → the editor's and your own addresses.
-- Sign-in method: One-time PIN (an emailed code) needs no accounts.
-- Save, then open the application and copy its **Audience (AUD) tag**. Your **team
-  domain** is shown under Zero Trust → Settings → Custom pages (`xxxx.cloudflareaccess.com`).
+At least 12 characters; a few random words is good (`maple-river-lantern-42`). It is
+the only thing protecting the dashboard, so don't reuse one from elsewhere.
 
 ### 3. The Worker
 
-In `studio-api/wrangler.toml` fill in `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD`
-(neither is secret) and uncomment the `routes` line with your domain. Then, from
-`studio-api/`:
+Uncomment the `routes` line in `studio-api/wrangler.toml` (it is set to `druk.help`;
+use your own domain). This makes the dashboard's API answer on the same address as the
+dashboard, which the sign-in cookie needs. Then, from `studio-api/`:
 
 ```bash
-npx wrangler secret put EDITOR_EMAILS --config wrangler.toml   # editor@example.org,you@example.org
-npx wrangler secret put ADMIN_EMAILS  --config wrangler.toml   # optional — see below
+npx wrangler secret put ADMIN_PASSWORD --config wrangler.toml     # type the password when asked
 npx wrangler deploy --config wrangler.toml
 ```
 
-Always pass `--config wrangler.toml` (see `studio-api/README.md`). Emails are
-secrets so they stay out of the repository.
-
-- `EDITOR_EMAILS` — everyone allowed in. Required; with it empty the API refuses everything.
-- `ADMIN_EMAILS` — optional. If set, **only** these people can permanently delete
-  (everyone else can still unpublish). Leave it unset to let every editor delete.
+Always pass `--config wrangler.toml` (see `studio-api/README.md`). Never put the
+password in a file or in chat.
 
 Optional, recommended: an **activity log** that also records failed attempts:
 
@@ -112,9 +86,7 @@ npx wrangler kv namespace create AUDIT --config wrangler.toml
 # paste the printed id into the commented [[kv_namespaces]] block, uncomment it, deploy again
 ```
 
-Without it, *Activity* is built from the repository's commit history (successful
-changes only). `HIDE_EDITOR_EMAIL = "1"` in `[vars]` records a short code instead of
-the email in commit messages — use it if the repository is public.
+Without it, *Activity* is built from the repository's commit history (successful changes only).
 
 ### 4. Publish the dashboard files
 
@@ -124,19 +96,23 @@ Merge this branch to `main`. `admin/` is static and goes out with the site.
 
 ### 5. Check it
 
-Open `https://druk.help/admin/` in a private window: you should be asked to sign
-in by Cloudflare, and a person not on the list should be refused. Then, as the
-editor, make a harmless edit and watch the progress card reach **Live**.
-Visiting `https://druk-studio.<account>.workers.dev/admin/api/content` directly
-must answer `401` — the Worker rejects anything Cloudflare Access did not sign.
+Open `https://druk.help/admin/`: you should see a password box, and nothing else.
+Visiting `https://druk.help/admin/api/content` without signing in must answer `401`.
+Then sign in, make a harmless edit and watch the progress card reach **Live**.
 
-## Giving someone access
+## How sign-in works
 
-1. Zero Trust → Access → Applications → the dashboard → **Policies** → add their email.
-2. `npx wrangler secret put EDITOR_EMAILS --config wrangler.toml` with the full new list; no redeploy needed.
+The Worker trades the password for a cookie that holds an expiry time signed with a key
+derived from the password. It lasts 12 hours (then the password box returns), is
+`HttpOnly`, `Secure` and `SameSite=Strict`, and is checked on **every** request. A wrong
+password is answered after a 1.5 s delay. **Changing the password signs everyone out.**
+The Activity log shows "editor" — everyone shares one login.
 
-To remove someone, remove them from both. (The Worker checks its own list on
-every request, so removing them from `EDITOR_EMAILS` alone already locks them out.)
+## Changing the password or giving access
+
+`npx wrangler secret put ADMIN_PASSWORD --config wrangler.toml` with the new one (no
+redeploy needed). Anyone who has the password has full access, including deleting, so share it
+only with people you trust, and change it when someone leaves.
 
 ## Trying it on your computer
 
@@ -146,12 +122,12 @@ node studio-api/admin-dev.mjs        # from the druk/ folder → http://localhos
 
 Runs the real dashboard and Worker code against a **pretend** GitHub that also runs
 the real `journal/sync.mjs` as the Action. Nothing touches the real repository.
-Sign-in is skipped, in this local copy only (`LOCAL_DEV` is never set on Cloudflare).
+The demo password is `demo-password-123`.
 
 ## Tests
 
 ```bash
-node --test studio-api/test/admin.test.mjs     # the Worker: sign-in, permissions, edits, conflicts, unpublish, delete…
+node --test studio-api/test/admin.test.mjs     # the Worker: sign-in, edits, conflicts, unpublish, delete…
 node studio-api/test/editor-roundtrip.mjs      # the visual editor on every real content file (needs Edge or Chrome)
 node journal/sync.mjs                          # the existing build; rerun after any change
 ```

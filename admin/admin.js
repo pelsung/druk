@@ -57,15 +57,35 @@
     this.status = status; this.message = message; this.code = code; this.errors = errors;
   }
 
-  function sessionEnded() {
+  /* the password screen; after a good password the dashboard starts */
+  function showLogin(message) {
+    S.edit = null;
+    document.body.classList.add('logged-out');
     var dlg = document.getElementById('modal');
-    clear(dlg);
-    dlg.appendChild(h('div', { class: 'modal-in' }, [
-      h('h2', { text: 'Please sign in again' }),
-      h('p', { text: 'Your session has ended, or the connection was lost. Nothing you did before this was lost; reload the page to sign in.' }),
-      h('div', { class: 'btns' }, [h('button', { class: 'btn btn-primary', type: 'button', onclick: function () { location.reload(); } }, 'Reload')]),
-    ]));
-    if (!dlg.open) dlg.showModal();
+    if (dlg.open) dlg.close();
+    var input = h('input', { type: 'password', id: 'pw', autocomplete: 'current-password', required: true });
+    var error = h('p', { class: 'error', role: 'alert', hidden: !message, text: message || '' });
+    var go = h('button', { class: 'btn btn-primary', type: 'submit' }, 'Sign in');
+    var form = h('form', { class: 'card login', onsubmit: function (e) {
+      e.preventDefault();
+      go.disabled = true; error.hidden = true;
+      api('POST', '/login', { password: input.value }).then(function () {
+        document.body.classList.remove('logged-out');
+        start();
+      }).catch(function (err) {
+        go.disabled = false;
+        if (err.code === 'unauthenticated') return;
+        error.textContent = err.message; error.hidden = false; input.select();
+      });
+    } }, [
+      h('p', { class: 'eyebrow', text: 'Editor dashboard' }),
+      h('h1', { text: 'Sign in' }),
+      h('p', { text: 'Enter the editor password. You stay signed in for about 12 hours.' }),
+      h('div', { class: 'field' }, [h('label', { for: 'pw', text: 'Password' }), input, error]),
+      go,
+    ]);
+    show(form);
+    input.focus();
   }
 
   function api(method, path, body) {
@@ -76,11 +96,11 @@
       method: method, headers: headers, body: body ? JSON.stringify(body) : undefined,
       credentials: 'same-origin', cache: 'no-store', redirect: 'manual',
     }).then(function (res) {
-      if (res.type === 'opaqueredirect' || res.status === 0) { sessionEnded(); throw new ApiError(0, 'Signed out', 'unauthenticated'); }
+      if (res.type === 'opaqueredirect' || res.status === 0) { showLogin(); throw new ApiError(0, 'Signed out', 'unauthenticated'); }
       return res.text().then(function (text) {
         var data = null;
         try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
-        if (res.status === 401) { sessionEnded(); throw new ApiError(401, 'Signed out', 'unauthenticated'); }
+        if (res.status === 401 && !(data && data.code === 'bad_password')) { showLogin(path === '/me' ? '' : 'Your session ended. Please sign in again.'); throw new ApiError(401, 'Signed out', 'unauthenticated'); }
         if (!res.ok || data === null) {
           throw new ApiError(res.status, (data && data.error) || 'Something went wrong. Please try again.', data && data.code, data && data.errors);
         }
@@ -886,18 +906,25 @@
 
   /* ---------- start ---------- */
 
-  show(h('p', { class: 'loading', text: 'Loading…' }));
-  api('GET', '/me').then(function (me) {
-    S.me = me;
-    document.getElementById('who').textContent = 'Signed in as ' + me.email;
-    return load();
-  }).then(route).catch(function (e) {
-    if (e && e.code === 'unauthenticated') return;
-    show([
-      h('h1', { text: 'The dashboard could not open' }),
-      h('p', { class: 'notice notice-bad', text: e && e.message ? e.message : 'Something went wrong.' }),
-      e && e.status === 403 ? h('p', { text: 'You are signed in, but this account has not been given access. Ask an administrator to add your email address.' }) : null,
-      h('button', { class: 'btn', type: 'button', onclick: function () { location.reload(); } }, 'Try again'),
-    ]);
+  function start() {
+    show(h('p', { class: 'loading', text: 'Loading…' }));
+    api('GET', '/me').then(function (me) {
+      S.me = me;
+      return load();
+    }).then(route).catch(function (e) {
+      if (e && e.code === 'unauthenticated') return;
+      show([
+        h('h1', { text: 'The dashboard could not open' }),
+        h('p', { class: 'notice notice-bad', text: e && e.message ? e.message : 'Something went wrong.' }),
+        h('button', { class: 'btn', type: 'button', onclick: function () { location.reload(); } }, 'Try again'),
+      ]);
+    });
+  }
+
+  document.getElementById('logout').addEventListener('click', function (e) {
+    e.preventDefault();
+    api('POST', '/logout').catch(function () {}).then(function () { showLogin(''); });
   });
+
+  start();
 })();

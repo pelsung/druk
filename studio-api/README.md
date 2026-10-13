@@ -12,9 +12,9 @@ team merges the pull request — see `content/stories/README.md` for reviewing.
 ## The editor dashboard
 
 This Worker also answers `/admin/api/*` for the editor dashboard (`../admin/`), in
-`admin.js`. Those routes are separate from `POST /submit`, need a Cloudflare Access
-login, and are described — with setup — in `../admin/README.md`. The GitHub token needs
-two more read permissions for it (**Actions** and **Checks**).
+`admin.js`. Those routes are separate from `POST /submit`, need the editor
+password, and are described — with setup — in `../admin/README.md`. The GitHub token needs
+one more read permission for it (**Actions**).
 
 ## Trying it without GitHub
 

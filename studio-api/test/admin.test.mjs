@@ -3,28 +3,32 @@ import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import worker from '../worker.js';
-import { resetAccessKeys } from '../admin.js';
 import { createFakeGitHub } from './fake-github.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const ENV = {
-  GITHUB_TOKEN: 'test-token-not-real', REPO: 'pelsung/druk', BRANCH: 'main',
-  ACCESS_TEAM_DOMAIN: 'team.cloudflareaccess.com', ACCESS_AUD: 'aud-123',
-  EDITOR_EMAILS: 'editor@example.com, boss@example.com', ADMIN_EMAILS: '',
-};
+const PASSWORD = 'correct horse battery staple';
+const ENV = { GITHUB_TOKEN: 'test-token-not-real', REPO: 'pelsung/druk', BRANCH: 'main', ADMIN_PASSWORD: PASSWORD };
 const SITE = 'https://druk.help';
 
 let fake;
-beforeEach(() => { resetAccessKeys(); fake = createFakeGitHub({ root: ROOT }); fake.install(); });
+beforeEach(() => { session = null; fake = createFakeGitHub({ root: ROOT }); fake.install(); });
 afterEach(() => { fake.uninstall(); });
 
-const now = () => Math.floor(Date.now() / 1000);
-const claims = (over = {}) => ({ iss: 'https://' + ENV.ACCESS_TEAM_DOMAIN, aud: [ENV.ACCESS_AUD], email: 'editor@example.com', exp: now() + 600, iat: now(), ...over });
+const post = { 'X-Druk-Admin': '1', 'Content-Type': 'application/json', 'Sec-Fetch-Site': 'same-origin', Origin: SITE };
+
+async function rawLogin(password, env = ENV) {
+  return worker.fetch(new Request(SITE + '/admin/api/login', { method: 'POST', headers: post, body: JSON.stringify({ password }) }), env);
+}
+let session;
+async function signedIn(env = ENV) {
+  const res = await rawLogin(PASSWORD, env);
+  return /druk_admin=[^;]+/.exec(res.headers.get('Set-Cookie'))[0];
+}
 
 async function api(method, path, { body, token, env = ENV, headers = {}, raw } = {}) {
-  const jwt = token === undefined ? fake.signToken(claims()) : token;
-  const h = { ...(method === 'GET' ? {} : { 'X-Druk-Admin': '1', 'Content-Type': 'application/json', 'Sec-Fetch-Site': 'same-origin', Origin: SITE }), ...headers };
-  if (jwt) h['Cf-Access-Jwt-Assertion'] = jwt;
+  const cookie = token === undefined ? (session ||= await signedIn(env)) : token;
+  const h = { ...(method === 'GET' ? {} : post), ...headers };
+  if (cookie) h.Cookie = cookie;
   const response = await worker.fetch(new Request(SITE + '/admin/api' + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined }), env);
   const text = await response.text();
   return { status: response.status, body: raw ? text : (text ? JSON.parse(text) : null) };
@@ -35,46 +39,55 @@ const openItem = async (item) => (await api('GET', `/item?kind=${item.kind}&id=$
 
 /* ---------- 2. who may call the API ---------- */
 
-test('visitors without a valid Access token get nothing', async () => {
-  for (const [name, token] of [
-    ['no token', null],
-    ['garbage', 'a.b.c'],
-    ['wrong audience', fake.signToken(claims({ aud: ['other'] }))],
-    ['wrong issuer', fake.signToken(claims({ iss: 'https://evil.cloudflareaccess.com' }))],
-    ['expired', fake.signToken(claims({ exp: now() - 3600 }))],
-    ['unknown key', fake.signToken(claims(), { kid: 'nope' })],
+test('the right password signs in; a wrong one does not', async () => {
+  const bad = await rawLogin('not the password');
+  assert.equal(bad.status, 401);
+  assert.equal((await bad.json()).code, 'bad_password');
+  assert.equal(bad.headers.get('Set-Cookie'), null);
+  assert.equal((await rawLogin('')).status, 401);
+
+  const good = await rawLogin(PASSWORD);
+  assert.equal(good.status, 200);
+  const header = good.headers.get('Set-Cookie');
+  assert.match(header, /HttpOnly/);
+  assert.match(header, /Secure/);
+  assert.match(header, /SameSite=Strict/);
+  assert.match(header, /Max-Age=43200/);
+  assert.doesNotMatch(header, new RegExp(PASSWORD));
+});
+
+test('without a valid session cookie nothing is returned and GitHub is never touched', async () => {
+  const good = await signedIn();
+  const [name, value] = good.split('=');
+  const [expires, mac] = value.split('.');
+  const other = await (async () => { const r = await rawLogin('a completely different one', { ...ENV, ADMIN_PASSWORD: 'a completely different one' }); return /druk_admin=[^;]+/.exec(r.headers.get('Set-Cookie'))[0]; })();
+  for (const [label, cookie] of [
+    ['no cookie', null],
+    ['garbage', 'druk_admin=abc'],
+    ['empty', 'druk_admin='],
+    ['expired', 'druk_admin=' + (Date.now() - 1000) + '.' + mac],
+    ['extended expiry (forged)', 'druk_admin=' + (Number(expires) + 99999999) + '.' + mac],
+    ['signed with another password', other],
   ]) {
-    const res = await api('GET', '/content', { token });
-    assert.equal(res.status, 401, name);
-    assert.equal(res.body.items, undefined, name);
+    const res = await api('GET', '/content', { token: cookie });
+    assert.equal(res.status, 401, label);
+    assert.equal(res.body.items, undefined, label);
+    assert.equal((await api('PUT', '/item', { token: cookie, body: { kind: 'journal', id: 'the-beginning' } })).status, 401, label);
   }
-  assert.equal(fake.state.calls.length, 0, 'GitHub must not be touched for unauthenticated requests');
+  assert.equal(fake.state.calls.length, 0);
 });
 
-test('a forged signature is refused, and a typed email header is ignored', async () => {
-  const { generateKeyPairSync } = await import('node:crypto');
-  const other = generateKeyPairSync('rsa', { modulusLength: 2048 });
-  const forged = fake.signToken(claims(), { key: other.privateKey });
-  assert.equal((await api('GET', '/content', { token: forged })).status, 401);
-  assert.equal((await api('GET', '/content', { token: null, headers: { 'Cf-Access-Authenticated-User-Email': 'editor@example.com' } })).status, 401);
+test('the dashboard refuses to run without a strong password set', async () => {
+  for (const env of [{ ...ENV, ADMIN_PASSWORD: '' }, { ...ENV, ADMIN_PASSWORD: 'short' }, { ...ENV, ADMIN_PASSWORD: undefined }]) {
+    assert.equal((await rawLogin('short', env)).status, 503);
+    assert.equal((await api('GET', '/content', { env, token: 'druk_admin=1.2' })).status, 503);
+  }
 });
 
-test('a signed-in person who is not an editor is refused', async () => {
-  const token = fake.signToken(claims({ email: 'stranger@example.com' }));
-  assert.equal((await api('GET', '/content', { token })).status, 403);
-  assert.equal((await api('PUT', '/item', { token, body: { kind: 'journal', id: 'the-beginning' } })).status, 403);
-});
-
-test('the dashboard refuses to run when Access is not configured', async () => {
-  const res = await api('GET', '/content', { env: { ...ENV, ACCESS_AUD: '' } });
-  assert.equal(res.status, 503);
-  assert.equal((await api('GET', '/content', { env: { ...ENV, EDITOR_EMAILS: '' } })).status, 503);
-});
-
-test('an authorised editor signs in', async () => {
-  const res = await api('GET', '/me');
-  assert.equal(res.status, 200);
-  assert.equal(res.body.email, 'editor@example.com');
+test('signed in, the editor can open the dashboard; logging out clears the cookie', async () => {
+  assert.equal((await api('GET', '/me')).status, 200);
+  const out = await worker.fetch(new Request(SITE + '/admin/api/logout', { method: 'POST', headers: post }), ENV);
+  assert.match(out.headers.get('Set-Cookie'), /Max-Age=0/);
 });
 
 test('changes must come from the dashboard, not another site', async () => {
@@ -82,6 +95,7 @@ test('changes must come from the dashboard, not another site', async () => {
   assert.equal((await api('POST', '/item/status', { body: { ...base, status: 'draft' }, headers: { 'X-Druk-Admin': '' } })).status, 403);
   assert.equal((await api('POST', '/item/status', { body: { ...base, status: 'draft' }, headers: { Origin: 'https://evil.example' } })).status, 403);
   assert.equal((await api('POST', '/item/status', { body: { ...base, status: 'draft' }, headers: { 'Sec-Fetch-Site': 'cross-site' } })).status, 403);
+  assert.equal((await worker.fetch(new Request(SITE + '/admin/api/login', { method: 'POST', headers: { ...post, Origin: 'https://evil.example' }, body: JSON.stringify({ password: PASSWORD }) }), ENV)).status, 403, 'login from another site');
   assert.equal(fake.state.calls.filter((c) => c.startsWith('POST') || c.startsWith('PATCH')).length, 0);
 });
 
@@ -270,15 +284,6 @@ test('deleting needs the exact title, and removes only that item’s files', asy
   assert.equal(again.status, 404);
 });
 
-test('deleting is limited to administrators when ADMIN_EMAILS is set', async () => {
-  const env = { ...ENV, ADMIN_EMAILS: 'boss@example.com' };
-  const item = (await api('GET', '/content', { env })).body.items.find((i) => i.id === 'what-we-learned');
-  const body = { kind: 'story', id: item.id, sha: item.sha, confirmTitle: item.title };
-  assert.equal((await api('POST', '/item/delete', { body, env })).status, 403);
-  const boss = fake.signToken(claims({ email: 'boss@example.com' }));
-  assert.equal((await api('POST', '/item/delete', { body, env, token: boss })).status, 200);
-});
-
 test('the browser cannot aim a request at any other file', async () => {
   const bad = [
     { kind: 'journal', id: '../../.github/workflows/publish-stories' },
@@ -400,7 +405,7 @@ test('the activity list comes from commit history and names the editor', async (
   await api('POST', '/item/status', { body: { kind: 'story', id: item.id, sha: item.sha, status: 'draft' } });
   const log = (await api('GET', '/audit')).body;
   assert.equal(log.source, 'history');
-  assert.ok(log.records.some((r) => r.by === 'editor@example.com' && /unpublished/.test(r.action)));
+  assert.ok(log.records.some((r) => r.by === 'editor' && /unpublished/.test(r.action)));
   assert.doesNotMatch(JSON.stringify(log), /test-token/);
 });
 

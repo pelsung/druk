@@ -43,7 +43,7 @@ link back to the journal or to all stories at the bottom.
 
 ## Managed from the editor dashboard
 
-The editor does not need GitHub: **`/admin/`** (private, behind Cloudflare Access) lists
+The editor does not need GitHub: **`/admin/`** (private, behind a password) lists
 every story and journal entry, edits them in a visual editor with a preview, publishes,
 unpublishes and deletes them, and approves or declines what visitors send in. It writes
 the same Markdown files as everything above, one commit per action, and the same GitHub
