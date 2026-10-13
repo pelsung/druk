@@ -84,7 +84,7 @@ window.DRUK_ENTRIES = [
   },
   {
     "slug": "the-beginning",
-    "title": "The beginning",
+    "title": "the journey of druk.help",
     "date": "2026-08-31",
     "author": "Druk.help",
     "excerpt": "Pelsup participants, the Pelsung ED, mentors, and professionals gathered for the opening of the program. The program began with prayers, followed by a discussion on Pelsung…",

@@ -1,5 +1,5 @@
 ---
-title: "The beginning"
+title: "the journey of druk.help"
 author: "Druk.help"
 date: "2026-08-31"
 image: "images/the-beginning.jpg"
