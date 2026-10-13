@@ -70,20 +70,12 @@
   }
 
   /* the password screen; after a good password the dashboard starts */
-  function hideLogin() {
-    var old = document.getElementById('auth');
-    if (old) old.remove();
-    document.body.classList.remove('logged-out');
-  }
-
   function showLogin(message) {
-    S.edit = null; S.stats = null;
-    hideLogin();
+    S.edit = null;
     document.body.classList.add('logged-out');
     var dlg = document.getElementById('modal');
     if (dlg.open) dlg.close();
-
-    var input = h('input', { type: 'password', id: 'pw', autocomplete: 'current-password', required: true, placeholder: 'Enter your password', 'aria-describedby': 'pw-error' });
+    var input = h('input', { type: 'password', id: 'pw', autocomplete: 'current-password', required: true, placeholder: 'Enter your password' });
     var toggle = h('button', { class: 'pw-toggle', type: 'button', 'aria-label': 'Show password', 'aria-pressed': 'false', onclick: function () {
       var shown = input.type === 'text';
       input.type = shown ? 'password' : 'text';
@@ -92,51 +84,28 @@
       toggle.setAttribute('aria-label', shown ? 'Show password' : 'Hide password');
       input.focus();
     } }, 'Show');
-    var error = h('p', { class: 'auth-error', id: 'pw-error', role: 'alert', hidden: !message, text: message || '' });
-    var go = h('button', { class: 'btn btn-primary auth-go', type: 'submit' }, [h('span', { class: 'spin', 'aria-hidden': 'true' }), h('span', { class: 'auth-go-text', text: 'Sign in' })]);
-
-    var form = h('form', { class: 'auth-form', novalidate: true, onsubmit: function (e) {
+    var error = h('p', { class: 'error', role: 'alert', hidden: !message, text: message || '' });
+    var go = h('button', { class: 'btn btn-primary', type: 'submit' }, 'Sign in');
+    var form = h('form', { class: 'card login', onsubmit: function (e) {
       e.preventDefault();
-      if (!input.value) { error.textContent = 'Please enter the password.'; error.hidden = false; input.focus(); return; }
-      go.disabled = true; go.classList.add('busy'); error.hidden = true; input.removeAttribute('aria-invalid');
+      go.disabled = true; error.hidden = true;
       api('POST', '/login', { password: input.value }).then(function (res) {
         setToken(res.token);
-        hideLogin();
+        document.body.classList.remove('logged-out');
         start();
       }).catch(function (err) {
-        go.disabled = false; go.classList.remove('busy');
+        go.disabled = false;
         if (err.code === 'unauthenticated') return;
-        error.textContent = err.message; error.hidden = false;
-        input.setAttribute('aria-invalid', 'true'); input.select();
+        error.textContent = err.message; error.hidden = false; input.select();
       });
     } }, [
       h('p', { class: 'eyebrow', text: 'Editor dashboard' }),
-      h('h1', { text: 'Welcome back' }),
-      h('p', { class: 'auth-sub', text: 'Sign in to manage the stories and journals on Druk.help.' }),
-      h('label', { for: 'pw', text: 'Password' }),
-      h('div', { class: 'pw-wrap' }, [input, toggle]),
-      error,
+      h('h1', { text: 'Sign in' }),
+      h('p', { text: 'Enter the editor password. You stay signed in for about 12 hours.' }),
+      h('div', { class: 'field' }, [h('label', { for: 'pw', text: 'Password' }), h('div', { class: 'pw-wrap' }, [input, toggle]), error]),
       go,
-      h('p', { class: 'auth-hint', text: 'You stay signed in for about 12 hours on this device.' }),
     ]);
-
-    var colours = ['#D9A62E', '#8E2B1F', '#3F6E9D', '#F3ECDD', '#4F7A47'];
-    var flags = h('div', { class: 'auth-flags', 'aria-hidden': 'true' }, colours.concat(colours).map(function (c) { return h('i', { style: 'background:' + c }); }));
-    var overlay = h('div', { class: 'auth', id: 'auth' }, [
-      h('aside', { class: 'auth-art' }, [
-        h('a', { class: 'auth-brand', href: '../index.html' }, [h('span', { class: 'flagmark', 'aria-hidden': 'true' }), h('span', { class: 'wordmark' }, ['Druk', h('span', { text: '.' }), 'help'])]),
-        h('div', {}, [
-          flags,
-          h('blockquote', { text: '“Behind every program is a person, a place, and a story.”' }),
-          h('p', { text: 'Real experiences. Shared learnings.' }),
-        ]),
-      ]),
-      h('main', { class: 'auth-panel' }, [
-        h('div', { class: 'auth-card' }, [form]),
-        h('a', { class: 'auth-back', href: '../index.html' }, '← Back to the website'),
-      ]),
-    ]);
-    document.body.appendChild(overlay);
+    show(form);
     input.focus();
   }
 
