@@ -4,7 +4,7 @@ compatibility_date = "2026-09-01"
 
 # The editor dashboard's API must answer on the same address as the dashboard, so
 # the site's own domain needs this route (keep it above [vars]; see admin/README.md):
-# routes = [{ pattern = "druk.help/admin/api/*", zone_name = "druk.help" }]
+routes = [{ pattern = "druk.help/admin/api/*", zone_name = "druk.help" }]
 
 [vars]
 REPO = "pelsung/druk"
