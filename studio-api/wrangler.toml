@@ -1,6 +1,7 @@
 name = "druk-studio"
 main = "worker.js"
 compatibility_date = "2026-09-01"
+workers_dev = true   # the Worker answers at druk-studio.<account>.workers.dev (the share form and the dashboard use it)
 
 
 [vars]
