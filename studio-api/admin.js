@@ -110,7 +110,7 @@ const SESSION_SECONDS = 12 * 60 * 60;
 
 function configured(env) {
   if (!env.GITHUB_TOKEN || !env.REPO || String(env.ADMIN_PASSWORD || '').length < 12) {
-    throw fail(503, 'The dashboard has not been set up yet. See admin/README.md.', 'not_configured');
+    throw Object.assign(fail(503, 'The dashboard has not been set up yet: the editor password is missing. See admin/README.md.', 'not_configured'), { expose: true });
   }
 }
 
