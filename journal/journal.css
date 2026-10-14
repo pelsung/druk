@@ -1106,3 +1106,7 @@ a.post-contents-row:hover { background: rgba(35, 26, 18, 0.05); color: var(--ink
 /* ---- listing page: fill the screen, header and content together ---- */
 :root:has(.jx-hero) { --wrap: 1400px; }
 @media (min-width: 1500px) { .jx-layout { grid-template-columns: minmax(0, 1fr) 380px; gap: 32px 56px; } }
+
+/* Journal / Stories switch, centred */
+.jx-switch { display: flex; width: fit-content; margin-left: auto; margin-right: auto; }
+@media (max-width: 720px) { .jx-switch { width: auto; } }
