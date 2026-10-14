@@ -445,7 +445,7 @@
   function journalBody(parts) {
     var line = function (t) { return String(t || '').replace(/\s+/g, ' ').trim(); };
     return ['## ' + WITNESS_HEADING, String(parts.description || '').replace(/\r\n/g, '\n').trim(), '## Personal reflection']
-      .concat(REFLECTION.map(function (r) { return '**' + r.question + '** ' + line(parts[r.key]); }))
+      .concat(REFLECTION.map(function (r) { return line(parts[r.key]); }))
       .join('\n\n');
   }
 

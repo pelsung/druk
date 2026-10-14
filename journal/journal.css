@@ -1110,3 +1110,32 @@ a.post-contents-row:hover { background: rgba(35, 26, 18, 0.05); color: var(--ink
 /* Journal / Stories switch, centred */
 .jx-switch { display: flex; width: fit-content; margin-left: auto; margin-right: auto; }
 @media (max-width: 720px) { .jx-switch { width: auto; } }
+
+
+/* the personal reflection reads as plain paragraphs: the three questions
+   stay in the writing form (and in older entries' HTML) but are not shown,
+   and the text is spaced exactly like the rest of the entry */
+.post-reflect p > strong:first-child { display: none; }
+.post-reflect p { font-size: 17px; line-height: 1.8; margin-bottom: 22px; color: #3A3026; }
+.post-body .post-reflect { padding: 28px 30px 6px; }
+
+
+/* ---- article header: tighter, so the photo starts sooner ---- */
+@media (min-width: 1025px) { .post-head { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); } .post-head-art { margin: -4px 0 -14px; } }
+.post-head { padding-top: 14px; }
+.post-head-text { padding: 0; }
+.post-kicker { margin-top: 18px; }
+.post-head h1 { font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08; margin-top: 8px; }
+.post-head .standfirst { margin-top: 12px; }
+.post-meta { margin-top: 14px; }
+
+
+/* ---- article body: fill the screen, tighter rhythm ---- */
+:root:has(.post-head) { --wrap: 1400px; }
+.post-layout { grid-template-columns: minmax(0, 1fr) 340px; column-gap: 48px; }
+.post-body h2 { margin: 30px 0 10px; }
+.post-body > h2 ~ :not(h2):not(.post-reflect), .post-reflect > h2 ~ * { margin-left: 0; }
+.post-body p { margin-bottom: 18px; }
+.post-hero { margin-bottom: 22px; }
+.post-body .post-reflect { margin-top: 28px; }
+@media (max-width: 1024px) { .post-layout { grid-template-columns: minmax(0, 1fr); } }

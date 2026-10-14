@@ -1087,7 +1087,7 @@
     var toc = article.querySelector(".post-toc");
     var stops = Array.prototype.map
       .call(
-        body.querySelectorAll("h2, h3, .post-reflect p > strong:first-child"),
+        body.querySelectorAll("h2, h3"),
         function (node) {
           var heading = /^H[23]$/.test(node.tagName);
           return {
