@@ -315,7 +315,7 @@
     var rest = ENTRIES.slice(1);
     var row = document.getElementById("jx-entries");
     var all = document.getElementById("jx-all");
-    var showing = 4;
+    var showing = rest.length;
     function renderRow() {
       fill(
         row,
