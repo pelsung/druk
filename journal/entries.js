@@ -9,6 +9,14 @@
 
 window.DRUK_ENTRIES = [
   {
+    "slug": "meeting-the-director-of-public-health",
+    "title": "Meeting the Director of Public health",
+    "date": "2026-10-15",
+    "author": "Druk.help",
+    "excerpt": "Two members of our team, Rinzin and Thinley, visited Mr. Karma, Director of Public Health, at the Ministry of Health office in Kawajangsa, Thimphu. Mr. Sonam Wangchuk, Program…",
+    "image": "images/meeting-the-director-of-public-health.jpg"
+  },
+  {
     "slug": "meeting-with-the-higher-education-ministers-private-secretary",
     "title": "Meeting with the Higher Education Minister’s Private Secretary",
     "date": "2026-10-05",
