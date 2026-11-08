@@ -208,28 +208,136 @@
 
   /* ---------- views ---------- */
 
+  /* ---------- the home dashboard: numbers drawn as charts ---------- */
+
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function svgBox(markup, cls, label) {
+    var d = document.createElement('div');
+    d.className = cls || 'chart'; d.setAttribute('role', 'img'); d.setAttribute('aria-label', label || '');
+    d.innerHTML = markup; return d;
+  }
+  function panel(title, sub, body, extra) {
+    return h('section', { class: 'panel ' + (extra || '') }, [
+      h('div', { class: 'panel-head' }, [h('h2', { text: title }), sub ? h('p', { text: sub }) : null]), body,
+    ]);
+  }
+
+  /* ring: published vs unpublished vs waiting */
+  function donut(parts, centreNumber, centreLabel) {
+    var total = parts.reduce(function (a, p) { return a + p.n; }, 0) || 1, R = 54, C = 2 * Math.PI * R, off = 0, arcs = '';
+    parts.forEach(function (p) {
+      if (!p.n) return;
+      var len = p.n / total * C;
+      arcs += '<circle cx="70" cy="70" r="' + R + '" fill="none" stroke="' + p.color + '" stroke-width="16" stroke-dasharray="' + Math.max(len - 3, 0.5) + ' ' + C + '" stroke-dashoffset="' + (-off) + '" transform="rotate(-90 70 70)" stroke-linecap="round"><title>' + esc(p.label) + ': ' + p.n + '</title></circle>';
+      off += len;
+    });
+    var svg = '<svg viewBox="0 0 140 140" width="170" height="170"><circle cx="70" cy="70" r="' + R + '" fill="none" stroke="var(--line)" stroke-width="16" opacity=".5"/>' + arcs +
+      '<text x="70" y="71" text-anchor="middle" class="d-n">' + centreNumber + '</text><text x="70" y="90" text-anchor="middle" class="d-l">' + esc(centreLabel) + '</text></svg>';
+    var legend = h('ul', { class: 'legend' }, parts.map(function (p) {
+      return h('li', {}, [h('i', { style: 'background:' + p.color }), h('span', { text: p.label }), h('b', { text: String(p.n) })]);
+    }));
+    return h('div', { class: 'donut-wrap' }, [svgBox(svg, 'donut', centreLabel + ': ' + parts.map(function (p) { return p.n + ' ' + p.label; }).join(', ')), legend]);
+  }
+
+  /* stacked bars: entries per month, stories and journal */
+  function monthBars(items) {
+    var map = {}, keys = [];
+    items.forEach(function (i) {
+      if (!i.date || i.status === 'draft') return;
+      var k = String(i.date).slice(0, 7); if (!/^\d{4}-\d{2}$/.test(k)) return;
+      map[k] = map[k] || { story: 0, journal: 0 }; map[k][i.kind]++;
+    });
+    keys = Object.keys(map).sort();
+    if (!keys.length) return h('div', { class: 'empty', text: 'Nothing published yet.' });
+    var out = [], y = +keys[0].slice(0, 4), m = +keys[0].slice(5), end = keys[keys.length - 1];
+    for (;;) { var k = y + '-' + (m < 10 ? '0' : '') + m; out.push(k); if (k >= end) break; if (++m > 12) { m = 1; y++; } }
+    out = out.slice(-8);
+    var max = Math.max.apply(null, out.map(function (k) { var v = map[k] || { story: 0, journal: 0 }; return v.story + v.journal; }).concat([2]));
+    var W = 520, H = 200, pad = 28, bw = Math.min(46, (W - pad * 2) / out.length - 14), g = '';
+    for (var t = 0; t <= 2; t++) { var yy = H - pad - (H - pad * 2) * t / 2; g += '<line x1="' + pad + '" x2="' + (W - 8) + '" y1="' + yy + '" y2="' + yy + '" stroke="var(--line)" stroke-dasharray="3 4"/><text x="' + (pad - 6) + '" y="' + (yy + 4) + '" text-anchor="end" class="ax">' + Math.round(max * t / 2) + '</text>'; }
+    out.forEach(function (k, idx) {
+      var v = map[k] || { story: 0, journal: 0 }, x = pad + 10 + idx * ((W - pad * 2 - 10) / out.length), scale = (H - pad * 2) / max;
+      var jh = v.journal * scale, sh = v.story * scale, base = H - pad;
+      if (jh) g += '<rect x="' + x + '" y="' + (base - jh) + '" width="' + bw + '" height="' + jh + '" rx="5" fill="var(--accent)"><title>' + v.journal + ' journal</title></rect>';
+      if (sh) g += '<rect x="' + x + '" y="' + (base - jh - sh) + '" width="' + bw + '" height="' + sh + '" rx="5" fill="var(--gold)"><title>' + v.story + ' stories</title></rect>';
+      var tot = v.story + v.journal; if (tot) g += '<text x="' + (x + bw / 2) + '" y="' + (base - jh - sh - 6) + '" text-anchor="middle" class="ax ax-b">' + tot + '</text>';
+      var label = new Date(k + '-01T00:00:00').toLocaleString(undefined, { month: 'short' });
+      g += '<text x="' + (x + bw / 2) + '" y="' + (H - 8) + '" text-anchor="middle" class="ax">' + label + '</text>';
+    });
+    var box = h('div', {}, [svgBox('<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%">' + g + '</svg>', 'chart', 'Entries published per month')]);
+    box.appendChild(h('ul', { class: 'legend legend-row' }, [
+      h('li', {}, [h('i', { style: 'background:var(--accent)' }), h('span', { text: 'Journal entries' })]),
+      h('li', {}, [h('i', { style: 'background:var(--gold)' }), h('span', { text: 'Stories' })]),
+    ]));
+    return box;
+  }
+
+  /* horizontal bars: topics */
+  function topicBars(items) {
+    var c = {};
+    items.forEach(function (i) { if (i.kind === 'story' && i.category && i.status !== 'draft') c[i.category] = (c[i.category] || 0) + 1; });
+    var rows = Object.keys(c).map(function (k) { return [k, c[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 6);
+    if (!rows.length) return h('div', { class: 'empty', text: 'Stories with a topic will appear here.' });
+    var max = rows[0][1];
+    return h('div', { class: 'hbars' }, rows.map(function (r) {
+      return h('div', { class: 'hbar' }, [
+        h('span', { class: 'hbar-l', text: r[0] }),
+        h('span', { class: 'hbar-t' }, [h('span', { class: 'hbar-f', style: 'width:' + Math.max(8, r[1] / max * 100) + '%' })]),
+        h('b', { text: String(r[1]) }),
+      ]);
+    }));
+  }
+
+  var ICONS = {
+    story: '<path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M8 7h6M8 11h6"/>',
+    journal: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+    pending: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    drafts: '<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><path d="M4 4l16 16"/>',
+  };
+  function kpi(n, label, href, icon, tone, hint) {
+    var i = document.createElement('span'); i.className = 'kpi-ico';
+    i.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[icon] + '</svg>';
+    return h('a', { class: 'kpi kpi-' + tone, href: href }, [
+      i, h('span', { class: 'kpi-n', text: String(n) }), h('span', { class: 'kpi-l', text: label }), h('span', { class: 'kpi-h', text: hint }),
+    ]);
+  }
+
   function viewHome() {
-    var s = S.stats;
-    var recent = S.items.slice(0, 5);
+    var s = S.stats, items = S.items;
+    var hour = new Date().getHours(), greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    var live = s.publishedStories + s.publishedJournals;
+    var latest = items.filter(function (i) { return i.status === 'published'; })[0];
+    var recent = items.slice(0, 5);
     show([
-      h('div', { class: 'page-head' }, [h('div', {}, [
-        h('p', { class: 'eyebrow', text: 'Editor dashboard' }),
-        h('h1', { text: 'Welcome back' }),
-        h('p', { text: 'Everything on the website, in one place. Open a story or journal to change it, unpublish it, or review what visitors have sent in.' }),
-      ])]),
-      h('div', { class: 'stats' }, [
-        stat(s.publishedStories, 'Published stories', '#/published?kind=story'),
-        stat(s.publishedJournals, 'Published journal entries', '#/published?kind=journal'),
-        stat(s.pending, 'Waiting for review', '#/pending', s.pending > 0),
-        stat(s.drafts, 'Unpublished', '#/drafts'),
+      h('div', { class: 'hero' }, [
+        h('div', {}, [
+          h('p', { class: 'eyebrow', text: 'Editor dashboard' }),
+          h('h1', { text: greet + '.' }),
+          h('p', { text: live + ' pieces are live on the website' + (latest ? '. The newest is “' + latest.title + '”.' : '.') }),
+        ]),
+        h('div', { class: 'hero-actions' }, [
+          h('a', { class: 'btn btn-primary', href: '#/pending' }, s.pending ? 'Review ' + s.pending + ' new' : 'Nothing to review'),
+          h('a', { class: 'btn hero-ghost', href: '../', target: '_blank', rel: 'noopener' }, 'View the website ↗'),
+        ]),
       ]),
-      s.pending ? h('div', { class: 'notice notice-info' }, [
-        s.pending === 1 ? 'A visitor has sent in something new that nobody has reviewed yet. ' : s.pending + ' things sent in by visitors have not been reviewed yet. ',
-        h('a', { href: '#/pending' }, 'Review them →'),
-      ]) : null,
-      h('h2', { text: 'Most recent' }),
-      h('p', { class: 'count', text: 'By date.' }),
-      recent.length ? h('div', { class: 'list' }, recent.map(row)) : h('div', { class: 'list' }, [h('div', { class: 'empty', text: 'Nothing has been published yet.' })]),
+      h('div', { class: 'kpis' }, [
+        kpi(s.publishedStories, 'Published stories', '#/published?kind=story', 'story', 'gold', 'Shared by visitors & team'),
+        kpi(s.publishedJournals, 'Journal entries', '#/published?kind=journal', 'journal', 'red', 'Field notes live now'),
+        kpi(s.pending, 'Waiting for review', '#/pending', 'pending', s.pending ? 'alert' : 'green', s.pending ? 'Needs your attention' : 'All caught up'),
+        kpi(s.drafts, 'Unpublished', '#/drafts', 'drafts', 'grey', 'Hidden, text is kept'),
+      ]),
+      h('div', { class: 'grid-charts' }, [
+        panel('Publishing by month', 'Stories and journal entries that are live', monthBars(items)),
+        panel('Where everything stands', 'All content right now', donut([
+          { label: 'Published', n: live, color: 'var(--ok)' },
+          { label: 'Waiting for review', n: s.pending, color: 'var(--gold)' },
+          { label: 'Unpublished', n: s.drafts, color: 'var(--faint)' },
+        ], live + s.pending + s.drafts, 'in total')),
+      ]),
+      h('div', { class: 'grid-charts grid-charts-b' }, [
+        panel('Story topics', 'What visitors write about', topicBars(items)),
+        panel('Most recent', 'Newest first', recent.length ? h('div', { class: 'list list-flat' }, recent.map(row)) : h('div', { class: 'empty', text: 'Nothing has been published yet.' })),
+      ]),
     ]);
   }
 

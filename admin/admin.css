@@ -301,3 +301,45 @@ table.log th { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; 
   background: #fff; color: var(--ink); border: 1px solid var(--line-strong); border-radius: 10px;
 }
 .pw-wrap input:focus { outline: 3px solid rgba(217, 166, 46, 0.55); border-color: var(--gold); }
+
+/* ---------- modern home dashboard ---------- */
+.hero { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding: 30px 34px; margin-bottom: 22px; border-radius: 18px; color: var(--dark-ink);
+  background: radial-gradient(120% 140% at 100% 0%, rgba(217,166,46,.38), transparent 55%), linear-gradient(135deg, #3A1A12 0%, #22170F 70%); box-shadow: 0 14px 34px -18px rgba(34,23,15,.7); }
+.hero .eyebrow { color: var(--gold); margin: 0 0 6px; }
+.hero h1 { color: #fff; margin: 0 0 6px; font-size: 40px; }
+.hero p { margin: 0; color: var(--dark-muted); max-width: 52ch; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-ghost { background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.25); }
+.hero-ghost:hover { background: rgba(255,255,255,.16); color: #fff; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; margin-bottom: 22px; }
+.kpi { --tone: var(--gold); position: relative; display: grid; gap: 2px; padding: 20px 20px 18px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); color: var(--ink); overflow: hidden; transition: transform .15s, box-shadow .15s; }
+.kpi::after { content: ""; position: absolute; right: -30px; top: -30px; width: 110px; height: 110px; border-radius: 50%; background: var(--tone); opacity: .13; }
+.kpi:hover { transform: translateY(-3px); box-shadow: 0 14px 26px -16px rgba(34,23,15,.45); text-decoration: none; color: var(--ink); }
+.kpi-gold { --tone: var(--gold); } .kpi-red { --tone: var(--accent); } .kpi-green { --tone: var(--ok); } .kpi-alert { --tone: var(--accent); } .kpi-grey { --tone: var(--faint); }
+.kpi-ico { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; margin-bottom: 12px; color: #fff; background: var(--tone); position: relative; z-index: 1; }
+.kpi-n { font-family: var(--serif); font-size: 46px; font-weight: 600; line-height: 1; }
+.kpi-l { font-weight: 600; margin-top: 6px; }
+.kpi-h { font-size: 13px; color: var(--faint); }
+.kpi-alert { border-color: var(--accent); }
+.grid-charts { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid-charts-b { grid-template-columns: 1fr 1.7fr; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px; min-width: 0; }
+.panel-head h2 { margin: 0; font-size: 20px; }
+.panel-head p { margin: 2px 0 16px; color: var(--faint); font-size: 14px; }
+.chart svg { display: block; overflow: visible; }
+.ax { font: 11px var(--mono); fill: var(--faint); } .ax-b { fill: var(--ink); font-weight: 600; }
+.donut-wrap { display: flex; align-items: center; justify-content: center; gap: 22px; flex-wrap: wrap; }
+.d-n { font: 600 28px var(--serif); fill: var(--ink); } .d-l { font: 11px var(--sans); fill: var(--faint); }
+.legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.legend li { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+.legend i { width: 11px; height: 11px; border-radius: 4px; flex: none; }
+.legend b { margin-left: auto; padding-left: 14px; color: var(--ink); }
+.legend-row { display: flex; gap: 18px; margin-top: 10px; }
+.hbars { display: grid; gap: 14px; }
+.hbar { display: grid; grid-template-columns: 90px 1fr 24px; align-items: center; gap: 10px; font-size: 14px; }
+.hbar-l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.hbar-t { height: 12px; background: var(--panel); border-radius: 99px; overflow: hidden; }
+.hbar-f { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--accent)); }
+.list-flat { border: 0; border-radius: 0; background: transparent; }
+@media (max-width: 980px) { .kpis { grid-template-columns: 1fr 1fr; } .grid-charts, .grid-charts-b { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .hero { padding: 22px; } .hero h1 { font-size: 30px; } .kpis { grid-template-columns: 1fr; } }
