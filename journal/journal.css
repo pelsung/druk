@@ -1139,3 +1139,7 @@ a.post-contents-row:hover { background: rgba(35, 26, 18, 0.05); color: var(--ink
 .post-hero { margin-bottom: 22px; }
 .post-body .post-reflect { margin-top: 28px; }
 @media (max-width: 1024px) { .post-layout { grid-template-columns: minmax(0, 1fr); } }
+
+
+/* the entry photo keeps its box but is shown whole, never cropped */
+.post-hero img { object-fit: contain; object-position: center; background: var(--panel); }

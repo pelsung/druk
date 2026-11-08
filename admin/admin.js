@@ -53,7 +53,7 @@
 
   function show(nodes) {
     clear(view);
-    [].concat(nodes).forEach(function (n) { view.appendChild(n); });
+    [].concat(nodes).forEach(function (n) { if (n) view.appendChild(n); });
   }
 
   function date(iso) { return iso ? core.humanDate(iso) : ''; }

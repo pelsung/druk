@@ -54,12 +54,7 @@ window.DRUK_ENTRIES = [
     "date": "2026-09-15",
     "author": "Druk.help",
     "excerpt": "Palliative care already runs in 15 districts. Reaching the rest will take volunteers, caregivers, and a training programme the team is about to join.",
-    "image": "images/blog2.jpeg",
-    "tags": [
-      "Bhutan",
-      "Healthcare",
-      "Palliative Care"
-    ]
+    "image": "images/blog2.jpeg"
   },
   {
     "slug": "building-sustainable-digital-solutions-bhutan",
@@ -67,12 +62,7 @@ window.DRUK_ENTRIES = [
     "date": "2026-09-10",
     "author": "Druk.help",
     "excerpt": "Two meetings in one day, with GMC and DPOB, on what it would take to build digital tools Bhutan can own, sustain and scale from within.",
-    "image": "images/building-sustainable-digital-solutions-bhutan.svg",
-    "tags": [
-      "Bhutan",
-      "Healthcare",
-      "Partnerships"
-    ]
+    "image": "images/building-sustainable-digital-solutions-bhutan.svg"
   },
   {
     "slug": "field-visits-to-homes-of-care-receivers",
