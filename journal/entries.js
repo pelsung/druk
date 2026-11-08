@@ -65,14 +65,6 @@ window.DRUK_ENTRIES = [
     "image": "images/blog2.jpeg"
   },
   {
-    "slug": "building-sustainable-digital-solutions-bhutan",
-    "title": "Building Sustainable Digital Solutions for Healthcare and Disability Support in Bhutan",
-    "date": "2026-09-10",
-    "author": "Druk.help",
-    "excerpt": "Two meetings in one day, with GMC and DPOB, on what it would take to build digital tools Bhutan can own, sustain and scale from within.",
-    "image": "images/building-sustainable-digital-solutions-bhutan.svg"
-  },
-  {
     "slug": "field-visits-to-homes-of-care-receivers",
     "title": "Field visits to homes of care receivers",
     "date": "2026-09-02",
