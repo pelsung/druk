@@ -8,7 +8,7 @@ caption: "Mentor Ranjit in conversation with Mr. Sonam Wangchuk"
 
 ## What we saw
 
-This morning, Mentor Ranjit Balaji, Thinley Dorji, and Rinzin Seldon met with Mr. Sonam Wangchuk, Program Officer of the Cancer Control Program, to learn about the current state of palliative care in Bhutan. They learned that services are already available in 15 districts, started by focal persons at the district hospitals, and that the teams in these districts have received the training they need to serve their communities. To extend care to the districts not yet covered, Bhutan will need a stronger network of volunteers and caregivers who can support community outreach.
+This morning, Mentor Ranjit Balaji, and our team members met with Mr. Sonam Wangchuk, Program Officer of the Cancer Control Program, to learn about the current state of palliative care in Bhutan. They learned that services are already available in 15 districts, started by focal persons at the district hospitals, and that the teams in these districts have received the training they need to serve their communities. To extend care to the districts not yet covered, Bhutan will need a stronger network of volunteers and caregivers who can support community outreach.
 
 ## Personal reflection
 
