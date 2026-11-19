@@ -8,7 +8,7 @@ caption: "The Ministry of Health signboard outside the gate"
 
 ## What we saw
 
-Two members of our team, Rinzin and Thinley, visited Mr. Karma, Director of Public Health, at the Ministry of Health office in Kawajangsa, Thimphu. Mr. Sonam Wangchuk, Program Officer of the Cancer Control Program, was also present at the meeting.The meeting was an open, verbal discussion. It began with a demonstration of the Druk Help dashboard and its features. The discussion then moved to the development of the Druk Help portal, including its integration with EPIS and other relevant organizations.Our team shared that currently our focus and priority is on the development of the system. Training and collaboration will follow, but only after the system is developed well to be presented.
+Our Team visited Mr. Karma, Director of Public Health, at the Ministry of Health office in Kawajangsa, Thimphu. Mr. Sonam Wangchuk, Program Officer of the Cancer Control Program, was also present at the meeting.The meeting was an open, verbal discussion. It began with a demonstration of the Druk Help dashboard and its features. The discussion then moved to the development of the Druk Help portal, including its integration with EPIS and other relevant organizations.Our team shared that currently our focus and priority is on the development of the system. Training and collaboration will follow, but only after the system is developed well to be presented.
 
 ## Personal reflection
 
