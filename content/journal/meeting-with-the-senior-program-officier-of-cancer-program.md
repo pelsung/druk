@@ -1,5 +1,5 @@
 ---
-title: "Meeting with the Senior Program Officier of Cancer Program"
+title: "Meeting the Senior Program Officier of Cancer Program"
 author: "Druk.help"
 date: "2026-11-18"
 image: "images/meeting-with-the-senior-program-officier-of-cancer-program.jpg"
