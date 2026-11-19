@@ -9,6 +9,14 @@
 
 window.DRUK_ENTRIES = [
   {
+    "slug": "meeting-with-the-senior-program-officier-of-cancer-program",
+    "title": "Meeting with the Senior Program Officier of Cancer Program",
+    "date": "2026-11-18",
+    "author": "Druk.help",
+    "excerpt": "Our team, together with our mentor Varun, met with Mrs Yangdon, Senior Program Officer of the Cancer program at the Ministry of Health.",
+    "image": "images/meeting-with-the-senior-program-officier-of-cancer-program.jpg"
+  },
+  {
     "slug": "meeting-the-director-of-public-health",
     "title": "Meeting the Director of Public health",
     "date": "2026-10-15",
