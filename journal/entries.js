@@ -61,7 +61,7 @@ window.DRUK_ENTRIES = [
     "title": "Meeting the Program Officer of Cancer Control Program",
     "date": "2026-09-15",
     "author": "Druk.help",
-    "excerpt": "This morning, Mentor Ranjit Balaji, Thinley Dorji, and Rinzin Seldon met with Mr. Sonam Wangchuk, Program Officer of the Cancer Control Program, to learn about the current state…",
+    "excerpt": "This morning, Mentor Ranjit Balaji, and our team members met with Mr. Sonam Wangchuk, Program Officer of the Cancer Control Program, to learn about the current state of palliative…",
     "image": "images/meeting-the-program-officer-of-cancer-control-program.jpg"
   },
   {
